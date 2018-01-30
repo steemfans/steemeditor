@@ -10,7 +10,8 @@
       <el-menu-item index="1">首页</el-menu-item>
       <div class="login_box">
         <span class="login_info">{{ userName }}</span>
-        <el-button type="primary" @click="logout">{{ userName ? '退出' : '登录' }}</el-button>
+        <el-button :type="(userName ? 'danger' : 'primary')"
+        @click="logout">{{ userName ? '退出' : '登录' }}</el-button>
       </div>
     </el-menu>
     <div class="body_box">
@@ -44,6 +45,7 @@
         <el-button type="button" @click="innerLabel('image')">
           <i class="iconfont icon-tupian"></i>
         </el-button>
+        <el-button type="primary" style="float: right;margin: 10px;">提交</el-button>
       </el-header>
       <el-container>
         <el-aside width="50%">
@@ -89,40 +91,37 @@ export default {
         hyperlink: '[Google]: http://google.com/',
         image: '![Alt text](http://wx2.sinaimg.cn/bmiddle/9d8ae485ly1fnoog4u9czg206a07ue89.gif "Optional title")',
       },
+      sc2: window.sc2,
     };
   },
   components: {
-    VueMarkdown // 声明组件
+    VueMarkdown,
   },
   methods: {
     handleSelect() {},
     userOnInput() {
-      console.log(this.userInput);
+      this.consoleLog(this.userInput);
       this.markDown = this.userInput;
     },
-    handleClick() {
-      alert('button click');
-    },
+    handleClick() {},
     innerLabel(type) {
-      console.log(type);
+      this.consoleLog(type);
       this.addLabel(type);
     },
     addLabel(type) {
       this.userInput = this.userInput + this.insert[type];
       this.markDown = this.userInput;
     },
-    getCaretPosition(oField) {},
-    login() {
-      alert(1)
-    },
+    getCaretPosition() {},
+    login() {},
     logout() {
-      sc2.revokeToken(function (err, result) {
-        console.log('You successfully logged out', err, result);
+      this.sc2.revokeToken((err, result) => {
+        this.consoleLog(result);
       });
     },
   },
   computed: {},
-  mounted () {
+  mounted() {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
     this.userName = this.userInfo.name;
     this.markDown = this.userInput;
