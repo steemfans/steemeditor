@@ -10,42 +10,43 @@ export default {
   data() {
     return {
       userInfo: '',
+      sc2: window.sc2,
     };
   },
   methods: {
-    getUrlParam: function() {
-      var obj = {};
-      var url = window.location;
+    getUrlParam() {
+      const obj = {};
+      const url = window.location;
       obj.hash = url.hash.replace('#', '');
       obj.param = {};
-      var arr = url.search.slice(1).split('&');
-      for (var i = 0; i < arr.length; i++) {
-        var temp = arr[i].split('=');
+      const arr = url.search.slice(1).split('&');
+      for (let i = 0; i < arr.length; i += 1) {
+        const temp = arr[i].split('=');
         obj.param[temp[0]] = temp[1];
       }
       return obj;
     },
   },
-  mounted () {
+  mounted() {
     this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
     if (!this.userInfo) {
-      var param = this.getUrlParam().param;
+      const param = this.getUrlParam().param;
       if (param.access_token) {
-        sc2.setAccessToken(param.access_token);
-        sc2.me(function (err, result) {
-          console.log('/me', err, result);
+        this.sc2.setAccessToken(param.access_token);
+        this.sc2.me((err, result) => {
+          this.consoleLog(result);
           if (!err) {
-            localStorage.setItem('userInfo', result)
+            localStorage.setItem('userInfo', result);
           }
         });
       } else {
-        sc2.init({
+        this.sc2.init({
           baseURL: 'https://v2.steemconnect.com',
-          app: 'busy.app',
-          callbackURL: 'http://test.com',
-          scope: ['vote', 'comment']
+          app: 'steemeditor',
+          callbackURL: 'https://steemeditor.com',
+          scope: ['vote', 'comment'],
         });
-        var link = sc2.getLoginURL('test');
+        const link = this.sc2.getLoginURL('test');
         window.location.href = link;
       }
     }

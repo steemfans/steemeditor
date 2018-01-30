@@ -9,7 +9,12 @@ import router from './router';
 
 Vue.config.productionTip = false;
 Vue.use(ElementUI);
-
+Vue.prototype.consoleLog = (text) => {
+  console.log(text);
+};
+Vue.prototype.alertErr = (text) => {
+  alert(text);
+};
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
