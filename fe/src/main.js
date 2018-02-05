@@ -15,6 +15,18 @@ Vue.prototype.consoleLog = (text) => {
 Vue.prototype.alertErr = (text) => {
   alert(text);
 };
+Vue.prototype.getUrlParam = () => {
+  const obj = {};
+  const url = window.location;
+  obj.hash = url.hash.replace('#', '');
+  obj.param = {};
+  const arr = url.search.slice(1).split('&');
+  for (let i = 0; i < arr.length; i += 1) {
+    const temp = arr[i].split('=');
+    obj.param[temp[0]] = temp[1];
+  }
+  return obj;
+};
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
