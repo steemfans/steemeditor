@@ -15,7 +15,11 @@
       </div>
     </el-menu>
     <div class="body_box">
-      <el-container>
+      <div class="text_info">
+        <el-input v-model="title" @change="titleChange" placeholder="请输入标题"></el-input>
+        <el-input v-model="tag" @change="tagChange" placeholder="请输入标签"></el-input>
+      </div>
+      <el-container style="border: 1px solid #dcdfe6;">
       <el-header>
         <el-dropdown>
           <el-button type="button">
@@ -45,7 +49,8 @@
         <el-button type="button" @click="innerLabel('image')">
           <i class="iconfont icon-tupian"></i>
         </el-button>
-        <el-button type="primary" style="float: right;margin: 10px;">提交</el-button>
+        <el-button type="primary" style="float: right;margin: 10px;"
+          @click="postArticle">提交</el-button>
       </el-header>
       <el-container>
         <el-aside width="50%">
@@ -76,9 +81,11 @@ export default {
     return {
       activeIndex: '1',
       userInfo: {},
-      userInput: '### 这里是要展示的markdown文字，也可以通过props传递',
+      userInput: (localStorage.getItem('userInput') || ''),
       userName: '',
       markDown: '',
+      title: (localStorage.getItem('title') || ''),
+      tag: (localStorage.getItem('tag') || ''),
       insert: {
         h1: '\n# H1',
         h2: '\n## H2',
@@ -92,6 +99,7 @@ export default {
         image: '![Alt text](http://wx2.sinaimg.cn/bmiddle/9d8ae485ly1fnoog4u9czg206a07ue89.gif "Optional title")',
       },
       sc2: window.sc2,
+      md5: window.MD5,
     };
   },
   components: {
@@ -100,10 +108,17 @@ export default {
   methods: {
     handleSelect() {},
     userOnInput() {
-      this.consoleLog(this.userInput);
+      // this.consoleLog(this.userInput);
+      localStorage.setItem('userInput', this.userInput);
       this.markDown = this.userInput;
     },
     handleClick() {},
+    titleChange() {
+      localStorage.setItem('title', this.title);
+    },
+    tagChange() {
+      localStorage.setItem('tag', this.tag);
+    },
     innerLabel(type) {
       this.consoleLog(type);
       this.addLabel(type);
@@ -112,18 +127,59 @@ export default {
       this.userInput = this.userInput + this.insert[type];
       this.markDown = this.userInput;
     },
+    formatUrl(address) {
+      const text = address || '';
+      const dateTmp = new Date();
+      const month = dateTmp.getMonth() + 1;
+      const day = dateTmp.getDate();
+      const dateStr = '-' + dateTmp.getFullYear() + (month > 9 ? month : '0' + month) + (day > 9 ? day : '0' + day);
+      let url = '';
+      if (/[\u4e00-\u9fa5]+/.test(text)) {
+        const re = text.replace(/[\u4e00-\u9fa5]+/g, '').toLowerCase() || '';
+        url = (re ? re.replace(/ /g, '-') : this.md5(text).slice(0, 6)).toUpperCase() + dateStr;
+      } else {
+        url = text.replace(/ /g, '-').toLowerCase() + dateStr;
+      }
+      return url;
+    },
     getCaretPosition() {},
     login() {},
     logout() {
       this.sc2.revokeToken((err, result) => {
+        localStorage.removeItem('userInput');
+        localStorage.removeItem('title');
+        localStorage.removeItem('tag');
+        window.location.href = window.location.origin;
+        // localStorage.removeItem('userInfo');
         this.consoleLog(result);
+      });
+    },
+    postArticle() {
+      const tagList = this.tag.split(' ');
+      const link = this.formatUrl(this.title);
+      this.sc2.comment('', tagList[0], this.userName, link, this.title, this.userInput, {
+        tags: tagList,
+        app: 'steemeditor/1.0.0',
+      }, (err, res) => {
+        localStorage.removeItem('userInput');
+        localStorage.removeItem('title');
+        localStorage.removeItem('tag');
+        this.consoleLog(res);
       });
     },
   },
   computed: {},
   mounted() {
-    this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    this.userName = this.userInfo.name;
+    const param = this.getUrlParam().param;
+    this.sc2.setAccessToken(param.access_token);
+    this.sc2.me((err, result) => {
+      this.consoleLog(result);
+      if (!err) {
+        this.userInfo = result || {};
+        this.consoleLog(this.userInfo);
+        this.userName = this.userInfo.name;
+      }
+    });
     this.markDown = this.userInput;
   },
 };
@@ -198,21 +254,33 @@ body > .el-container {
 
 .markDown {
   height: 99%;
-  width: 95%;
+  width: 97%;
   background-color: #fff;
   border: 1px solid #e1e3e9;
   padding: 0px 10px 2px;
 }
+
 .el-dropdown {
   vertical-align: top;
 }
+
 .el-dropdown + .el-dropdown {
   margin-left: 15px;
 }
+
 .el-icon-arrow-down {
   font-size: 12px;
 }
+
 .el-dropdown-selfdefine {
   margin: 8px;
+}
+
+.text_info {
+  margin-top: 10px;
+}
+.text_info .el-input {
+  display: block;
+  margin-bottom: 10px;
 }
 </style>

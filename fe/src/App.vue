@@ -13,42 +13,18 @@ export default {
       sc2: window.sc2,
     };
   },
-  methods: {
-    getUrlParam() {
-      const obj = {};
-      const url = window.location;
-      obj.hash = url.hash.replace('#', '');
-      obj.param = {};
-      const arr = url.search.slice(1).split('&');
-      for (let i = 0; i < arr.length; i += 1) {
-        const temp = arr[i].split('=');
-        obj.param[temp[0]] = temp[1];
-      }
-      return obj;
-    },
-  },
+  methods: {},
   mounted() {
-    this.userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (!this.userInfo) {
-      const param = this.getUrlParam().param;
-      if (param.access_token) {
-        this.sc2.setAccessToken(param.access_token);
-        this.sc2.me((err, result) => {
-          this.consoleLog(result);
-          if (!err) {
-            localStorage.setItem('userInfo', result);
-          }
-        });
-      } else {
-        this.sc2.init({
-          baseURL: 'https://v2.steemconnect.com',
-          app: 'steemeditor',
-          callbackURL: 'https://steemeditor.com',
-          scope: ['vote', 'comment'],
-        });
-        const link = this.sc2.getLoginURL('test');
-        window.location.href = link;
-      }
+    const param = this.getUrlParam().param;
+    if (!param.access_token) {
+      this.sc2.init({
+        baseURL: 'https://v2.steemconnect.com',
+        app: 'steemeditor',
+        callbackURL: 'https://steemeditor.com',
+        scope: ['vote', 'comment'],
+      });
+      const link = this.sc2.getLoginURL();
+      window.location.href = link;
     }
   },
 };
