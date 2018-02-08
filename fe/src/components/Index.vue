@@ -10,8 +10,8 @@
       <el-menu-item index="1">首页</el-menu-item>
       <div class="login_box">
         <span class="login_info">{{ userName }}</span>
-        <el-button :type="(userName ? 'danger' : 'primary')"
-        @click="logout">{{ userName ? '退出' : '登录' }}</el-button>
+        <el-button :type="(logStatus ? 'danger' : 'primary')"
+        @click="logStatusChange">{{ logStatus ? '退出' : '登录' }}</el-button>
       </div>
     </el-menu>
     <div class="body_box">
@@ -100,6 +100,7 @@ export default {
       },
       sc2: window.sc2,
       md5: window.MD5,
+      logStatus: false,
     };
   },
   components: {
@@ -139,14 +140,30 @@ export default {
       let url = '';
       if (/[\u4e00-\u9fa5]+/.test(text)) {
         const re = text.replace(/[\u4e00-\u9fa5]+/g, '').toLowerCase() || '';
-        url = (re ? re.replace(/ /g, '-') : this.md5(text).slice(0, 6)).toUpperCase() + dateStr;
+        url = (re ? re.replace(/ /g, '-') : this.md5(text).slice(0, 6)) + dateStr;
       } else {
         url = text.replace(/ /g, '-').toLowerCase() + dateStr;
       }
       return url;
     },
     getCaretPosition() {},
-    login() {},
+    login() {
+      this.sc2.init({
+        baseURL: 'https://v2.steemconnect.com',
+        app: 'steemeditor',
+        callbackURL: 'https://steemeditor.com',
+        scope: ['vote', 'comment'],
+      });
+      const link = this.sc2.getLoginURL();
+      window.location.href = link;
+    },
+    logStatusChange() {
+      if (!this.logStatus) {
+        this.login();
+      } else {
+        this.logout();
+      }
+    },
     logout() {
       this.sc2.revokeToken((err, result) => {
         localStorage.removeItem('userInput');
@@ -174,15 +191,18 @@ export default {
   computed: {},
   mounted() {
     const param = this.getUrlParam().param;
-    this.sc2.setAccessToken(param.access_token);
-    this.sc2.me((err, result) => {
-      this.consoleLog(result);
-      if (!err) {
-        this.userInfo = result || {};
-        this.consoleLog(this.userInfo);
-        this.userName = this.userInfo.name;
-      }
-    });
+    if (param.access_token) {
+      this.logStatus = true;
+      this.sc2.setAccessToken(param.access_token);
+      this.sc2.me((err, result) => {
+        this.consoleLog(result);
+        if (!err) {
+          this.userInfo = result || {};
+          this.consoleLog(this.userInfo);
+          this.userName = this.userInfo.name;
+        }
+      });
+    }
     this.markDown = this.userInput;
   },
 };
