@@ -51,8 +51,10 @@
         </el-button>
         <el-button type="primary" style="float: right;margin: 10px;"
           @click="postArticle">提交</el-button>
+        <el-button type="danger" style="float: right;margin: 10px;"
+          @click="cancelArticle">清除</el-button>
       </el-header>
-      <el-container>
+      <el-container style="position: absolute;width: 100%;height: 79%;top: 21%;">
         <el-aside width="50%">
           <el-input
             type="textarea"
@@ -63,7 +65,7 @@
             v-model="userInput">
           </el-input>
         </el-aside>
-        <el-aside  width="50%">
+        <el-aside  width="50%" style="right: 0px;border: 1px solid rgb(220, 223, 230);">
           <vue-markdown :source="markDown" class="markDown"></vue-markdown>
         </el-aside>
       </el-container>
@@ -174,6 +176,11 @@ export default {
         this.consoleLog(result);
       });
     },
+    cancelArticle() {
+      this.userInput = '';
+      this.markDown = '';
+      localStorage.removeItem('userInput');
+    },
     postArticle() {
       const tagList = this.tag.split(' ');
       const link = this.formatUrl(this.title);
@@ -242,7 +249,7 @@ a {
   color: #333;
   text-align: initial;
   /*text-align: center;*/
-  min-height: 400px;
+  min-height: 80%;
 }
 
 /*.el-main {
@@ -268,7 +275,14 @@ body > .el-container {
 .body_box {
   margin-top: 20px;
   width: 90%;
-  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  -webkit-transform: translateX(-50%);
+  -moz-transform: translateX(-50%);
+  -ms-transform: translateX(-50%);
+  -o-transform: translateX(-50%);
+  height: 90%;
 }
 
 .userInput {
@@ -276,10 +290,10 @@ body > .el-container {
 }
 
 .markDown {
-  height: 99%;
+  min-height: 97%;
   width: 97%;
   background-color: #fff;
-  border: 1px solid #e1e3e9;
+  /*border: 1px solid #e1e3e9;*/
   padding: 0px 10px 2px;
 }
 
