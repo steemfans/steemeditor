@@ -14,19 +14,7 @@ export default {
     };
   },
   methods: {},
-  mounted() {
-    const param = this.getUrlParam().param;
-    if (!param.access_token) {
-      this.sc2.init({
-        baseURL: 'https://v2.steemconnect.com',
-        app: 'steemeditor',
-        callbackURL: 'https://steemeditor.com',
-        scope: ['vote', 'comment'],
-      });
-      const link = this.sc2.getLoginURL();
-      window.location.href = link;
-    }
-  },
+  mounted() {},
 };
 </script>
 
