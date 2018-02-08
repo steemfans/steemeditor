@@ -23,8 +23,8 @@ export default {
         callbackURL: 'https://steemeditor.com',
         scope: ['vote', 'comment'],
       });
-      const link = this.sc2.getLoginURL();
-      window.location.href = link;
+      // const link = this.sc2.getLoginURL();
+      // window.location.href = link;
     }
   },
 };
