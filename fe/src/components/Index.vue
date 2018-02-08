@@ -133,7 +133,10 @@ export default {
       const dateTmp = new Date();
       const month = dateTmp.getMonth() + 1;
       const day = dateTmp.getDate();
-      const dateStr = '-' + dateTmp.getFullYear() + (month > 9 ? month : '0' + month) + (day > 9 ? day : '0' + day);
+      const tmpYear = dateTmp.getFullYear();
+      const tmpMonth = month > 9 ? month : `0${month}`;
+      const tmpDay = day > 9 ? day : `0${day}`;
+      const dateStr = `-${tmpYear}${tmpMonth}${tmpDay}`;
       let url = '';
       if (/[\u4e00-\u9fa5]+/.test(text)) {
         const re = text.replace(/[\u4e00-\u9fa5]+/g, '').toLowerCase() || '';
