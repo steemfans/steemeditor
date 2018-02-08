@@ -28,10 +28,10 @@ export default {
   /*margin-top: 60px;*/
 }
 .markDown textarea {
-    height: 100%;
+    min-height: 100%;
 }
 .userInput textarea {
-    height: 100%;
+    min-height: 100% !important;
 }
 .markDown h1 {
     display: block;
