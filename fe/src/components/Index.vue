@@ -7,17 +7,21 @@
     text-color="#333"
     active-text-color="#1FBF8F"
     :default-active="activeIndex">
-      <el-menu-item index="1">首页</el-menu-item>
+      <div class="logo_box">
+        <span class="site_title">SteemEditor</span>
+      </div>
+      <!-- <el-menu-item index="1">SteemEditor</el-menu-item> -->
       <div class="login_box">
         <span class="login_info">{{ userName }}</span>
         <el-button :type="(logStatus ? 'danger' : 'primary')"
-        @click="logStatusChange">{{ logStatus ? '退出' : '登录' }}</el-button>
+        @click="logStatusChange">{{ logStatus ? 'Logout' : 'Login' }}</el-button>
       </div>
     </el-menu>
     <div class="body_box">
       <div class="text_info">
-        <el-input v-model="title" @change="titleChange" placeholder="请输入标题"></el-input>
-        <el-input v-model="tag" @change="tagChange" placeholder="请输入标签"></el-input>
+        <el-input v-model="title" @change="titleChange" placeholder="Your Title"></el-input>
+        <el-input v-model="tag" @change="tagChange"
+        placeholder="Tags (separate by space)"></el-input>
       </div>
       <el-container style="border: 1px solid #dcdfe6;">
       <el-header>
@@ -27,11 +31,21 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </el-button>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item><h1 @click="innerLabel('h1')">h1</h1></el-dropdown-item>
-            <el-dropdown-item><h2 @click="innerLabel('h2')">h2</h2></el-dropdown-item>
-            <el-dropdown-item><h3 @click="innerLabel('h3')">h3</h3></el-dropdown-item>
-            <el-dropdown-item><h4 @click="innerLabel('h4')">h4</h4></el-dropdown-item>
-            <el-dropdown-item><h5 @click="innerLabel('h5')">h5</h5></el-dropdown-item>
+            <div class="label_btn" @click="innerLabel('h1')">
+              <el-dropdown-item><h1>h1</h1></el-dropdown-item>
+            </div>
+            <div class="label_btn" @click="innerLabel('h2')">
+              <el-dropdown-item><h2>h2</h2></el-dropdown-item>
+            </div>
+            <div class="label_btn" @click="innerLabel('h3')">
+              <el-dropdown-item><h3>h3</h3></el-dropdown-item>
+            </div>
+            <div class="label_btn" @click="innerLabel('h4')">
+              <el-dropdown-item><h4>h4</h4></el-dropdown-item>
+            </div>
+            <div class="label_btn" @click="innerLabel('h5')">
+              <el-dropdown-item><h5>h5</h5></el-dropdown-item>
+            </div>
           </el-dropdown-menu>
         </el-dropdown>
         <el-button type="button" @click="innerLabel('bold')">
@@ -50,9 +64,9 @@
           <i class="iconfont icon-tupian"></i>
         </el-button>
         <el-button type="primary" style="float: right;margin: 10px;"
-          @click="postArticle">提交</el-button>
+          @click="postArticle">Post</el-button>
         <el-button type="danger" style="float: right;margin: 10px;"
-          @click="cancelArticle">清除</el-button>
+          @click="cancelArticle">Clear</el-button>
       </el-header>
       <el-container style="position: absolute;width: 100%;height: 79%;top: 21%;">
         <el-aside width="50%">
@@ -60,13 +74,15 @@
             type="textarea"
             class="userInput"
             id="userInput"
-            placeholder="请输入Markdown内容"
+            placeholder="Start your creation"
             @input="userOnInput"
             v-model="userInput">
           </el-input>
         </el-aside>
         <el-aside  width="50%" style="right: 0px;border: 1px solid rgb(220, 223, 230);">
-          <vue-markdown :source="markDown" class="markDown"></vue-markdown>
+          <div class="markDown_box">
+            <vue-markdown :source="markDown" class="markDown"></vue-markdown>
+          </div>
         </el-aside>
       </el-container>
     </el-container>
@@ -96,10 +112,11 @@ export default {
         h5: '\n##### H5',
         bold: '\n**Bold**',
         italic: '\n*Italic*',
-        quote: '\n```quote```\n',
-        hyperlink: '[Google]: http://google.com/',
-        image: '![Alt text](http://wx2.sinaimg.cn/bmiddle/9d8ae485ly1fnoog4u9czg206a07ue89.gif "Optional title")',
+        quote: '\n>quote',
+        hyperlink: '\n[text](hyperlink)',
+        image: '\n![text](img_url)',
       },
+      scroll: '',
       sc2: window.sc2,
       md5: window.MD5,
       logStatus: false,
@@ -127,7 +144,13 @@ export default {
       this.addLabel(type);
     },
     addLabel(type) {
-      this.userInput = this.userInput + this.insert[type];
+      const el = document.querySelector('.userInput textarea');
+      const pos = this.getTextPosition(el);
+      const insertText = this.innerText(pos);
+      const index = pos.start + this.insert[type].length;
+      this.consoleLog(pos);
+      this.userInput = insertText.startPos + this.insert[type] + insertText.endPos;
+      this.setCursorPosition(el, index);
       this.markDown = this.userInput;
     },
     formatUrl(address) {
@@ -194,9 +217,87 @@ export default {
         this.consoleLog(res);
       });
     },
+    areaSceoll() {
+      this.scroll = document.querySelector('.userInput textarea').scrollTop;
+      document.querySelector('.markDown_box').scrollTop = this.scroll;
+    },
+    markSceoll() {
+      this.scroll = document.querySelector('.markDown_box').scrollTop;
+      document.querySelector('.userInput textarea').scrollTop = this.scroll;
+    },
+    setCursorPosition(elem, index) {
+      this.consoleLog(index);
+      const val = elem.value;
+      const len = val.length;
+      if (len < index) return;
+      setTimeout(() => {
+        elem.focus();
+        if (elem.setSelectionRange) {
+          elem.setSelectionRange(index, index);
+        } else { // IE9-
+          const range = elem.createTextRange();
+          range.moveStart('character', -len);
+          range.moveEnd('character', -len);
+          range.moveStart('character', index);
+          range.moveEnd('character', 0);
+          range.select();
+        }
+      }, 10);
+    },
+    getTextPosition(el) {
+      return (
+        ('selectionStart' in el && function test() {
+          const l = el.selectionEnd - el.selectionStart;
+          return {
+            start: el.selectionStart,
+            end: el.selectionEnd,
+            length: l,
+            text: el.value.substr(el.selectionStart, l),
+            base: el,
+            select: l,
+          };
+        }) ||
+        (document.selection && function test() {
+          el.focus();
+          const r = document.selection.createRange();
+          const re = el.createTextRange();
+          const rc = re.duplicate();
+          if (r === null) {
+            return {
+              start: 0,
+              end: el.value.length,
+              length: 0,
+            };
+          }
+          re.moveToBookmark(r.getBookmark());
+          rc.setEndPoint('EndToStart', re);
+          return {
+            start: rc.text.length,
+            end: rc.text.length + r.text.length,
+            length: r.text.length,
+            text: r.text,
+            base: rc,
+            select: r,
+          };
+        }) ||
+        function test() {
+          return null;
+        }
+      )();
+    },
+    innerText(pos) {
+      const start = this.userInput.slice(0, pos.start);
+      const end = this.userInput.slice(pos.end);
+      return {
+        startPos: start,
+        endPos: end,
+      };
+    },
   },
   computed: {},
   mounted() {
+    document.querySelector('.userInput textarea').addEventListener('scroll', this.areaSceoll);
+    document.querySelector('.markDown_box').addEventListener('scroll', this.markSceoll);
     const param = this.getUrlParam().param;
     if (param.access_token) {
       this.logStatus = true;
@@ -250,6 +351,11 @@ a {
   text-align: initial;
   /*text-align: center;*/
   min-height: 80%;
+}
+
+.markDown_box {
+  overflow: scroll;
+  height: 100%;
 }
 
 /*.el-main {
@@ -319,5 +425,16 @@ body > .el-container {
 .text_info .el-input {
   display: block;
   margin-bottom: 10px;
+}
+.logo_box {
+    width: 200px;
+    float: left;
+    line-height: 60px;
+    font-size: 25px;
+    background-image: url(../assets/steem-editor.png);
+    background-size: 50px 40px;
+    background-repeat: no-repeat;
+    background-position: center left;
+    padding-left: 25px;
 }
 </style>
