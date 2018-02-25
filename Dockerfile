@@ -5,4 +5,4 @@ RUN apk add --no-cache git nodejs && \
         cd /app/fe && \
         npm install 
 WORKDIR /app/fe
-CMD ["npm run start"] 
+CMD ["/app/run.sh"] 

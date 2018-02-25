@@ -1,1 +1,1 @@
-cd /app/fe && npm run start
+/usr/bin/npm run start
