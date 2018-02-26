@@ -8,7 +8,7 @@
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
-    "build": "node build/build.js"
+    "build": "node build/build.js && rsync -avzP --delete dist/*  -e 'ssh -p 29287' root@steem-editor.dev:/data/wwwroot/steem-editor/public"
   },
   "dependencies": {
     "element-ui": "^2.0.11",
