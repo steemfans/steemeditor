@@ -1,0 +1,19 @@
+{
+  "extends": "airbnb",
+  "env": {
+    "es6": true,
+    "node": true,
+    "browser": true
+  },
+  "plugins": [
+    "html"
+  ],
+  "globals": {
+    "document": true,
+    "window": true,
+    "console": true
+  },
+  "rules": {
+    "no-alert": 0
+  }
+}

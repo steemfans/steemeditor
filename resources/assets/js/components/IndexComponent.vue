@@ -92,18 +92,20 @@
 
 <script>
 import VueMarkdown from 'vue-markdown';
+import Sc2 from 'sc2-sdk';
+import Md5 from 'md5';
 
 export default {
-  name: 'Index',
+  name: 'index',
   data() {
     return {
       activeIndex: '1',
       userInfo: {},
-      userInput: (localStorage.getItem('userInput') || ''),
+      userInput: (window.localStorage.getItem('userInput') || ''),
       userName: '',
       markDown: '',
-      title: (localStorage.getItem('title') || ''),
-      tag: (localStorage.getItem('tag') || ''),
+      title: (window.localStorage.getItem('title') || ''),
+      tag: (window.localStorage.getItem('tag') || ''),
       insert: {
         h1: '\n# H1',
         h2: '\n## H2',
@@ -117,8 +119,6 @@ export default {
         image: '\n![text](img_url)',
       },
       scroll: '',
-      sc2: window.sc2,
-      md5: window.MD5,
       logStatus: false,
     };
   },
@@ -129,15 +129,15 @@ export default {
     handleSelect() {},
     userOnInput() {
       // this.consoleLog(this.userInput);
-      localStorage.setItem('userInput', this.userInput);
+      window.localStorage.setItem('userInput', this.userInput);
       this.markDown = this.userInput;
     },
     handleClick() {},
     titleChange() {
-      localStorage.setItem('title', this.title);
+      window.localStorage.setItem('title', this.title);
     },
     tagChange() {
-      localStorage.setItem('tag', this.tag);
+      window.localStorage.setItem('tag', this.tag);
     },
     innerLabel(type) {
       this.consoleLog(type);
@@ -165,7 +165,7 @@ export default {
       let url = '';
       if (/[\u4e00-\u9fa5]+/.test(text)) {
         const re = text.replace(/[\u4e00-\u9fa5]+/g, '').toLowerCase() || '';
-        url = (re ? re.replace(/ /g, '-') : this.md5(text).slice(0, 6)) + dateStr;
+        url = (re ? re.replace(/ /g, '-') : Md5(text).slice(0, 6)) + dateStr;
       } else {
         url = text.replace(/ /g, '-').toLowerCase() + dateStr;
       }
@@ -173,13 +173,13 @@ export default {
     },
     getCaretPosition() {},
     login() {
-      this.sc2.init({
+      Sc2.init({
         baseURL: 'https://v2.steemconnect.com',
         app: 'steemeditor',
         callbackURL: 'https://steemeditor.com',
         scope: ['vote', 'comment'],
       });
-      const link = this.sc2.getLoginURL();
+      const link = Sc2.getLoginURL();
       window.location.href = link;
     },
     logStatusChange() {
@@ -190,10 +190,10 @@ export default {
       }
     },
     logout() {
-      this.sc2.revokeToken((err, result) => {
-        localStorage.removeItem('userInput');
-        localStorage.removeItem('title');
-        localStorage.removeItem('tag');
+      Sc2.revokeToken((err, result) => {
+        window.localStorage.removeItem('userInput');
+        window.localStorage.removeItem('title');
+        window.localStorage.removeItem('tag');
         window.location.href = window.location.origin;
         // localStorage.removeItem('userInfo');
         this.consoleLog(result);
@@ -202,18 +202,18 @@ export default {
     cancelArticle() {
       this.userInput = '';
       this.markDown = '';
-      localStorage.removeItem('userInput');
+      window.localStorage.removeItem('userInput');
     },
     postArticle() {
       const tagList = this.tag.split(' ');
       const link = this.formatUrl(this.title);
-      this.sc2.comment('', tagList[0], this.userName, link, this.title, this.userInput, {
+      Sc2.comment('', tagList[0], this.userName, link, this.title, this.userInput, {
         tags: tagList,
         app: 'steemeditor/1.0.0',
       }, (err, res) => {
-        localStorage.removeItem('userInput');
-        localStorage.removeItem('title');
-        localStorage.removeItem('tag');
+        window.localStorage.removeItem('userInput');
+        window.localStorage.removeItem('title');
+        window.localStorage.removeItem('tag');
         this.consoleLog(res);
       });
     },
@@ -298,11 +298,11 @@ export default {
   mounted() {
     document.querySelector('.userInput textarea').addEventListener('scroll', this.areaSceoll);
     document.querySelector('.markDown_box').addEventListener('scroll', this.markSceoll);
-    const param = this.getUrlParam().param;
+    const param = {};
     if (param.access_token) {
       this.logStatus = true;
-      this.sc2.setAccessToken(param.access_token);
-      this.sc2.me((err, result) => {
+      Sc2.setAccessToken(param.access_token);
+      Sc2.me((err, result) => {
         this.consoleLog(result);
         if (!err) {
           this.userInfo = result || {};
