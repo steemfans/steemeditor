@@ -217,11 +217,11 @@ export default {
         this.consoleLog(res);
       });
     },
-    areaSceoll() {
+    areaScoll() {
       this.scroll = document.querySelector('.userInput textarea').scrollTop;
       document.querySelector('.markDown_box').scrollTop = this.scroll;
     },
-    markSceoll() {
+    markScoll() {
       this.scroll = document.querySelector('.markDown_box').scrollTop;
       document.querySelector('.userInput textarea').scrollTop = this.scroll;
     },
@@ -296,8 +296,8 @@ export default {
   },
   computed: {},
   mounted() {
-    document.querySelector('.userInput textarea').addEventListener('scroll', this.areaSceoll);
-    document.querySelector('.markDown_box').addEventListener('scroll', this.markSceoll);
+    document.querySelector('.userInput textarea').addEventListener('scroll', this.areaScoll);
+    document.querySelector('.markDown_box').addEventListener('scroll', this.markScoll);
     const param = {};
     if (param.access_token) {
       this.logStatus = true;
