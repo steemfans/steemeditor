@@ -8,7 +8,7 @@
     active-text-color="#1FBF8F"
     :default-active="activeIndex">
       <div class="logo_box">
-        <span class="site_title">SteemEditor</span>
+        <span class="site_title">Steem Editor</span>
       </div>
       <!-- <el-menu-item index="1">SteemEditor</el-menu-item> -->
       <div class="login_box">
@@ -20,8 +20,22 @@
     <div class="body_box">
       <div class="text_info">
         <el-input v-model="title" @change="titleChange" placeholder="Your Title"></el-input>
-        <el-input v-model="tag" @change="tagChange"
-        placeholder="Tags (separate by space)"></el-input>
+        <el-row>
+          <el-col :span="12">
+            <el-input v-model="tag" @change="tagChange" placeholder="Tags (separate by space)"></el-input>
+          </el-col>
+          <el-col :span="12">
+            <el-select v-model="reward" placeholder="Reward">
+              <el-option
+                v-for="item in rewardOptions"
+                :key="item.value"
+                :label="item.text"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <el-checkbox v-model="isUpvote" label="Upvote post" border></el-checkbox>
+          </el-col>
+        </el-row>
       </div>
       <el-container style="border: 1px solid #dcdfe6;">
       <el-header>
@@ -93,7 +107,11 @@
 <script>
 import VueMarkdown from 'vue-markdown';
 import Sc2 from 'sc2-sdk';
-import Md5 from 'md5';
+import base58 from 'bs58';
+import secureRandom from 'secure-random';
+import getSlug from 'speakingurl';
+import steem from 'steem';
+import axios from 'axios';
 
 export default {
   name: 'index',
@@ -121,6 +139,22 @@ export default {
       scroll: '',
       logStatus: false,
       api: null,
+      reward: 50,
+      rewardOptions: [
+        {
+          value: 100,
+          text: 'Power Up 100%',
+        },
+        {
+          value: 50,
+          text: 'Default (50% / 50%)',
+        },
+        {
+          value: 0,
+          text: 'Decline Payout',
+        },
+      ],
+      isUpvote: true,
     };
   },
   components: {
@@ -129,7 +163,7 @@ export default {
   methods: {
     handleSelect() {},
     userOnInput() {
-      // this.consoleLog([this.userInput]);
+      // window.consoleLog([this.userInput]);
       window.localStorage.setItem('userInput', this.userInput);
       this.markDown = this.userInput;
     },
@@ -141,7 +175,7 @@ export default {
       window.localStorage.setItem('tag', this.tag);
     },
     innerLabel(type) {
-      this.consoleLog([type, 'innerLabel']);
+      window.consoleLog([type, 'innerLabel']);
       this.addLabel(type);
     },
     addLabel(type) {
@@ -149,28 +183,10 @@ export default {
       const pos = this.getTextPosition(el);
       const insertText = this.innerText(pos);
       const index = pos.start + this.insert[type].length;
-      this.consoleLog([pos, 'addLabel']);
+      window.consoleLog([pos, 'addLabel']);
       this.userInput = insertText.startPos + this.insert[type] + insertText.endPos;
       this.setCursorPosition(el, index);
       this.markDown = this.userInput;
-    },
-    formatUrl(address) {
-      const text = address || '';
-      const dateTmp = new Date();
-      const month = dateTmp.getMonth() + 1;
-      const day = dateTmp.getDate();
-      const tmpYear = dateTmp.getFullYear();
-      const tmpMonth = month > 9 ? month : `0${month}`;
-      const tmpDay = day > 9 ? day : `0${day}`;
-      const dateStr = `-${tmpYear}${tmpMonth}${tmpDay}`;
-      let url = '';
-      if (/[\u4e00-\u9fa5]+/.test(text)) {
-        const re = text.replace(/[\u4e00-\u9fa5]+/g, '').toLowerCase() || '';
-        url = (re ? re.replace(/ /g, '-') : Md5(text).slice(0, 6)) + dateStr;
-      } else {
-        url = text.replace(/ /g, '-').toLowerCase() + dateStr;
-      }
-      return url;
     },
     getCaretPosition() {},
     login() {
@@ -185,13 +201,19 @@ export default {
       }
     },
     logout() {
-      this.api.revokeToken((err, result) => {
+      this.api.revokeToken((logoutErr, result) => {
         window.localStorage.removeItem('userInput');
         window.localStorage.removeItem('title');
         window.localStorage.removeItem('tag');
-        window.location.href = window.location.origin;
-        // localStorage.removeItem('userInfo');
-        this.consoleLog([result, 'logout']);
+        axios.post('/logout', { accessToken: window.Laravel.accessToken })
+          .then(() => {
+            this.$message = 'Logout success!';
+            window.location.href = window.location.origin;
+            window.consoleLog([result, 'logout']);
+          })
+          .catch((err) => {
+            window.consoleLog([err, 'logout err']);
+          });
       });
     },
     cancelArticle() {
@@ -199,18 +221,162 @@ export default {
       this.markDown = '';
       window.localStorage.removeItem('userInput');
     },
-    postArticle() {
+    async postArticle() {
       const tagList = this.tag.split(' ');
-      const link = this.formatUrl(this.title);
-      this.api.comment('', tagList[0], this.userName, link, this.title, this.userInput, {
+      const link = await this.createPermlink(this.title, this.userName, '', tagList[0]);
+      window.consoleLog([link, 'postArticle123']);
+      // json metadata
+      const jsonMetadata = {
         tags: tagList,
         app: 'steemeditor/0.1.0',
-      }, (err, res) => {
-        window.localStorage.removeItem('userInput');
-        window.localStorage.removeItem('title');
-        window.localStorage.removeItem('tag');
-        this.consoleLog([res, 'postArticle']);
+        format: 'markdown',
+        app_url: 'https://steemeditor.com',
+      };
+
+      let comment = null;
+      let commentOptions = null;
+      let vote = null;
+      const operations = [];
+
+      // comment
+      comment = [
+        'comment',
+        {
+          parent_author: '',
+          parent_permlink: tagList[0],
+          author: this.userName,
+          permlink: link,
+          title: this.title,
+          body: this.userInput,
+          json_metadata: window.JSON.stringify(jsonMetadata),
+        },
+      ];
+      operations.push(comment);
+
+      // reward
+      switch (this.reward) {
+        case 100:
+          commentOptions = [
+            'comment_options',
+            {
+              author: this.userName,
+              permlink: link,
+              max_accepted_payout: '1000000.000 SBD',
+              percent_steem_dollars: 0,
+              allow_votes: true,
+              allow_curation_rewards: true,
+              extensions: [],
+            },
+          ];
+
+          break;
+        case 50:
+          commentOptions = null;
+          break;
+        case 0:
+          commentOptions = [
+            'comment_options',
+            {
+              author: this.userName,
+              permlink: link,
+              max_accepted_payout: '0.000 SBD',
+              percent_steem_dollars: 10000,
+              allow_votes: true,
+              allow_curation_rewards: true,
+              extensions: [],
+            },
+          ];
+          break;
+        default:
+          window.consoleLog(['err_commentOptions'], 'msg');
+          return;
+      }
+
+      window.consoleLog([commentOptions, 'commentOptions']);
+      if (commentOptions !== null) {
+        operations.push(commentOptions);
+      }
+
+      // vote
+      vote = [
+        'vote',
+        {
+          voter: this.userName,
+          author: this.userName,
+          permlink: link,
+          weight: 10000,
+        },
+      ];
+      operations.push(vote);
+
+      // post comment
+      this.$notify.info({
+        title: 'Please wait',
+        message: 'Sending data.',
       });
+      this.api.broadcast(operations)
+        .then((res) => {
+          window.localStorage.removeItem('userInput');
+          window.localStorage.removeItem('title');
+          window.localStorage.removeItem('tag');
+          window.consoleLog([res, 'postArticle then']);
+          this.$notify.info({
+            title: 'Success',
+            message: 'Post successfully',
+            type: 'success',
+          });
+        })
+        .catch((err) => {
+          switch (err.error_description) {
+            case 'body.size() > 0: Body is empty':
+              this.$notify.info({
+                title: 'Warning',
+                message: 'Body is empty.',
+                type: 'warning',
+              });
+              break;
+            default:
+              break;
+          }
+          window.consoleLog([err, 'postArticle catch'], 'msg');
+        });
+    },
+    async createPermlink(title, author, parentAuthor, parentPermlink) {
+      let permlink;
+      if (title && title.trim() !== '') {
+        let s = this.slug(title);
+        if (s === '') {
+          s = base58.encode(secureRandom.randomBuffer(4));
+        }
+        // ensure the permlink(slug) is unique
+        const slugState = await steem.api.getContentAsync(author, s);
+        window.consoleLog([slugState.body, 'slugState']);
+        let prefix;
+        if (slugState.body !== '') {
+          // make sure slug is unique
+          prefix = `${base58.encode(secureRandom.randomBuffer(4))}-`;
+        } else {
+          prefix = '';
+        }
+        permlink = prefix + s;
+        window.consoleLog([permlink, 'then']);
+      } else {
+        // comments: re-parentauthor-parentpermlink-time
+        const timeStr = new Date().toISOString().replace(/[^a-zA-Z0-9]+/g, '');
+        const tmpParentPermlink = parentPermlink.replace(/(-\d{8}t\d{9}z)/g, '');
+        permlink = `re-${parentAuthor}-${tmpParentPermlink}-${timeStr}`;
+      }
+      window.consoleLog([permlink, 'createPermlink']);
+      if (permlink.length > 255) {
+        // STEEMIT_MAX_PERMLINK_LENGTH
+        permlink = permlink.substring(permlink.length - 255, permlink.length);
+      }
+      // only letters numbers and dashes shall survive
+      permlink = permlink.toLowerCase().replace(/[^a-z0-9-]+/g, '');
+      return permlink;
+    },
+    slug(text) {
+      return getSlug(text.replace(/[<>]/g, ''), { truncate: 128 });
     },
     areaScoll() {
       this.scroll = document.querySelector('.userInput textarea').scrollTop;
@@ -221,7 +387,7 @@ export default {
       document.querySelector('.userInput textarea').scrollTop = this.scroll;
     },
     setCursorPosition(elem, index) {
-      this.consoleLog([index, 'setCursorPosition']);
+      window.consoleLog([index, 'setCursorPosition']);
       const val = elem.value;
       const len = val.length;
       if (len < index) return;
@@ -298,7 +464,7 @@ export default {
       this.logStatus = true;
       this.api.setAccessToken(window.Laravel.accessToken);
       this.userInfo = window.Laravel.userInfo || {};
-      this.consoleLog([this.userInfo, 'mounted']);
+      window.consoleLog([this.userInfo, 'mounted']);
       this.userName = this.userInfo.name;
     }
     this.markDown = this.userInput;

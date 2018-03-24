@@ -14,7 +14,7 @@ class HomeController extends Controller
         $tmpScope = array_map(function ($v) {
           return "'{$v}'";
         }, $scScope);
-        
+
         $userInfo = session('user');
         $accessToken = session('access_token');
 
@@ -48,6 +48,12 @@ class HomeController extends Controller
         return redirect()->action('HomeController@index');
     }
 
+    public function logout(Request $request) {
+        $accessToken = $request->input('accessToken');
+        session(['access_token' => '', 'user' => '']);
+        return response()->json([]);
+    }
+
     /**
      * This is an temporary function for SteemConnect
      */
@@ -60,11 +66,11 @@ class HomeController extends Controller
                 'Authorization'     => $accessToken,
             ]
         ];
-        
+
         $client = new \GuzzleHttp\Client();
         $res = $client->request('POST', $url, $httpParams);
         return json_decode($res->getBody()->getContents(), true);
     }
 
-    
+
 }

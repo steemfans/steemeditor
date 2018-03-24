@@ -13,3 +13,4 @@
 
 Route::get('/', 'HomeController@index');
 Route::get('/callback', 'HomeController@callback');
+Route::post('/logout', 'HomeController@logout');

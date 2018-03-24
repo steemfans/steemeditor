@@ -24,16 +24,13 @@ import App from './App.vue';
 
 Vue.use(ElementUI);
 
-Vue.config.productionTip = false;
-Vue.prototype.consoleLog = (resultArrOrStr, msgType = 'debug') => {
+window.debugEditor = !(process.env.NODE_ENV === 'production');
+window.consoleLog = (resultArrOrStr, msgType = 'debug') => {
   if (msgType === 'msg'
     || (msgType === 'debug' && window.debugEditor === true)) {
     // eslint-disable-next-line
     console.log(resultArrOrStr);
   }
-};
-Vue.prototype.alertErr = (text) => {
-  alert(text);
 };
 
 /* eslint-disable no-new */
