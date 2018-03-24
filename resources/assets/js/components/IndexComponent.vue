@@ -120,6 +120,7 @@ export default {
       },
       scroll: '',
       logStatus: false,
+      api: null,
     };
   },
   components: {
@@ -128,7 +129,7 @@ export default {
   methods: {
     handleSelect() {},
     userOnInput() {
-      // this.consoleLog(this.userInput);
+      // this.consoleLog([this.userInput]);
       window.localStorage.setItem('userInput', this.userInput);
       this.markDown = this.userInput;
     },
@@ -140,7 +141,7 @@ export default {
       window.localStorage.setItem('tag', this.tag);
     },
     innerLabel(type) {
-      this.consoleLog(type);
+      this.consoleLog([type, 'innerLabel']);
       this.addLabel(type);
     },
     addLabel(type) {
@@ -148,7 +149,7 @@ export default {
       const pos = this.getTextPosition(el);
       const insertText = this.innerText(pos);
       const index = pos.start + this.insert[type].length;
-      this.consoleLog(pos);
+      this.consoleLog([pos, 'addLabel']);
       this.userInput = insertText.startPos + this.insert[type] + insertText.endPos;
       this.setCursorPosition(el, index);
       this.markDown = this.userInput;
@@ -173,13 +174,7 @@ export default {
     },
     getCaretPosition() {},
     login() {
-      Sc2.init({
-        baseURL: 'https://v2.steemconnect.com',
-        app: 'steemeditor',
-        callbackURL: 'https://steemeditor.com',
-        scope: ['vote', 'comment'],
-      });
-      const link = Sc2.getLoginURL();
+      const link = this.api.getLoginURL();
       window.location.href = link;
     },
     logStatusChange() {
@@ -190,13 +185,13 @@ export default {
       }
     },
     logout() {
-      Sc2.revokeToken((err, result) => {
+      this.api.revokeToken((err, result) => {
         window.localStorage.removeItem('userInput');
         window.localStorage.removeItem('title');
         window.localStorage.removeItem('tag');
         window.location.href = window.location.origin;
         // localStorage.removeItem('userInfo');
-        this.consoleLog(result);
+        this.consoleLog([result, 'logout']);
       });
     },
     cancelArticle() {
@@ -207,14 +202,14 @@ export default {
     postArticle() {
       const tagList = this.tag.split(' ');
       const link = this.formatUrl(this.title);
-      Sc2.comment('', tagList[0], this.userName, link, this.title, this.userInput, {
+      this.api.comment('', tagList[0], this.userName, link, this.title, this.userInput, {
         tags: tagList,
-        app: 'steemeditor/1.0.0',
+        app: 'steemeditor/0.1.0',
       }, (err, res) => {
         window.localStorage.removeItem('userInput');
         window.localStorage.removeItem('title');
         window.localStorage.removeItem('tag');
-        this.consoleLog(res);
+        this.consoleLog([res, 'postArticle']);
       });
     },
     areaScoll() {
@@ -226,7 +221,7 @@ export default {
       document.querySelector('.userInput textarea').scrollTop = this.scroll;
     },
     setCursorPosition(elem, index) {
-      this.consoleLog(index);
+      this.consoleLog([index, 'setCursorPosition']);
       const val = elem.value;
       const len = val.length;
       if (len < index) return;
@@ -296,20 +291,15 @@ export default {
   },
   computed: {},
   mounted() {
+    this.api = Sc2.Initialize(window.Laravel.sc2);
     document.querySelector('.userInput textarea').addEventListener('scroll', this.areaScoll);
     document.querySelector('.markDown_box').addEventListener('scroll', this.markScoll);
-    const param = {};
-    if (param.access_token) {
+    if (window.Laravel.accessToken) {
       this.logStatus = true;
-      Sc2.setAccessToken(param.access_token);
-      Sc2.me((err, result) => {
-        this.consoleLog(result);
-        if (!err) {
-          this.userInfo = result || {};
-          this.consoleLog(this.userInfo);
-          this.userName = this.userInfo.name;
-        }
-      });
+      this.api.setAccessToken(window.Laravel.accessToken);
+      this.userInfo = window.Laravel.userInfo || {};
+      this.consoleLog([this.userInfo, 'mounted']);
+      this.userName = this.userInfo.name;
     }
     this.markDown = this.userInput;
   },

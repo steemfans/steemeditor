@@ -11,9 +11,5 @@
 |
 */
 
-Route::get('/', function () {
-    $data = [
-      'title' => 'Steem Editor'
-    ];
-    return view('home', $data);
-});
+Route::get('/', 'HomeController@index');
+Route::get('/callback', 'HomeController@callback');

@@ -25,8 +25,20 @@
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
   </head>
   <body>
+    <script>
+      Laravel = {
+        sc2: {
+          baseURL: 'https://v2.steemconnect.com',
+          app: '{{ $scApp }}',
+          callbackURL: '{{ $scCallback }}',
+          scope: [{!! $scScope !!}],
+        },
+        username: '{{ $username }}',
+        accessToken: '{{ $accessToken }}',
+        userInfo: {!! $userInfo !!},
+      }
+    </script>
     <div id="app"></div>
-    <!-- built files will be auto injected -->
     <script src="{{ mix('/js/main.js') }}"></script>
   </body>
 </html>
