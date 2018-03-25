@@ -320,7 +320,7 @@ export default {
           window.localStorage.removeItem('title');
           window.localStorage.removeItem('tag');
           window.consoleLog([res, 'postArticle then']);
-          this.$notify.info({
+          this.$notify({
             title: 'Success',
             message: 'Post successfully',
             type: 'success',
@@ -329,7 +329,7 @@ export default {
         .catch((err) => {
           switch (err.error_description) {
             case 'body.size() > 0: Body is empty':
-              this.$notify.info({
+              this.$notify({
                 title: 'Warning',
                 message: 'Body is empty.',
                 type: 'warning',
