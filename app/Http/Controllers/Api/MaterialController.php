@@ -71,7 +71,19 @@ class MaterialController extends Controller
 
     public function detail(Request $request) {
         $m_id = $request->input('m_id');
-        dump($request);die();
+        $material = Material::find($m_id);
+        if ($material) {
+            return response()->json([
+                'status' => true,
+                'msg' => 'success',
+                'data' => $material,
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'msg' => 'not_exist',
+            ]);
+        }
     }
 
     public function remove(Request $request) {
