@@ -17,8 +17,10 @@ class HomeController extends Controller
         }, $scScope);
 
         $userSession = session('user');
-        $userInfo = $userSession['user_info'];
-        $accessToken = $userSession['access_token'];
+        $userInfo = isset($userSession['user_info'])
+                        ? $userSession['user_info'] : null;
+        $accessToken = isset($userSession['access_token'])
+                        ? $userSession['access_token'] : null;
 
         $data = [
             'title' => 'Steem Editor',
@@ -39,6 +41,7 @@ class HomeController extends Controller
             'expires_in' => $request->input('expires_in'),
             'username' => $request->input('username'),
         ];
+        die();
         $userInfo = $this->getUserinfoByAccessToken($data['access_token']);
         $userSession = [
             'user_info' => $userInfo,
