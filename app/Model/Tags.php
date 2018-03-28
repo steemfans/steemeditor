@@ -6,8 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tags extends Model
 {
+    public static PUBLIC_TRUE = true;
+    public static PUBLIC_FALSE = false;
     protected $table = 'tags';
     public $timestamps = false;
+
+    protected $attributes = [
+        'public' => self::PUBLIC_TRUE,
+    ];
 
     public function materials() {
         return $this->belongsToMany(
