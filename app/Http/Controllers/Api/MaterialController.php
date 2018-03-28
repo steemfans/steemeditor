@@ -50,7 +50,7 @@ class MaterialController extends Controller
                 $materialModel->public = $public;
                 $materialModel->status = true;
                 $materialModel->save();
-                foreach($tags as $tag) {
+                foreach ($tags as $tag) {
                     $tagModel = Tags::where('tag_content', $tag)->first();
                     if (!$tagModel) {
                         $tagModel = new Tags;
@@ -64,7 +64,7 @@ class MaterialController extends Controller
                 $result['data'] = $materialModel->id;
                 DB::commit();
                 return response()->json($result);
-            } catch(QueryException $ex) {
+            } catch (QueryException $ex) {
                 DB::rollback();
                 $result['status'] = false;
                 $result['msg'] = $ex->get_messages();
@@ -175,8 +175,78 @@ class MaterialController extends Controller
     }
 
     public function update(Request $request) {
+        $result = [
+            'status' => false,
+            'msg' => null,
+            'data' => [],
+        ];
         $m_id = $request->input('m_id');
-        dump($request);die();
+        $token = $request->input('token');
+        $title = $request->input('title');
+        $body = $request->input('body');
+        $public = $request->input('public');
+        $tags = $request->input('tags');
+
+        if (!$token) {
+            $result['status'] = false;
+            $result['msg'] = 'need_login';
+            return response()->json($result);
+        }
+
+        $user = Users::where('token', $token)->first();
+        if (!$user) {
+            $result['status'] = false;
+            $result['msg'] = 'not_find_user';
+            return response()->json($result);
+        }
+
+        $material = Material::where([
+                'id' => $m_id,
+                'user_id' => $user->id,
+            ])->first();
+
+        if ($material) {
+            DB::beginTransaction();
+            try {
+                if ($title) {
+                    $material->title = $title;
+                }
+                if ($body) {
+                    $material->body = $body;
+                }
+                $material->public = $public;
+                $material->save();
+
+                if ($tags) {
+                    // remove previous tags
+                    $material->tags()->detach();
+                    // add new tags
+                    foreach ($tags as $tag) {
+                        $tagModel = Tags::where('tag_content', $tag)->first();
+                        if (!$tagModel) {
+                            $tagModel = new Tags;
+                            $tagModel->tag_content = $tag;
+                            $tagModel->save();
+                        }
+                        $material->tags()->attach($tagModel->id, ['user_id' => $user->id]);
+                    }
+                }
+                DB::commit();
+                $result['status'] = true;
+                $result['msg'] = 'success';
+                $result['data'] = $material->id;
+                return response()->json($result);
+            } catch (QueryException $ex) {
+                DB::rollback();
+                $result['status'] = false;
+                $result['msg'] = $ex->get_messages();
+                return response()->json($result);
+            }
+        } else {
+            $result['status'] = false;
+            $result['msg'] = 'not_found_material';
+        }
+        return response()->json($result);
     }
 
     public function tags(Request $request) {
