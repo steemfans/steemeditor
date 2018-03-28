@@ -192,7 +192,6 @@ class MaterialController extends Controller
             $result['msg'] = 'need_login';
             return response()->json($result);
         }
-
         $user = Users::where('token', $token)->first();
         if (!$user) {
             $result['status'] = false;
@@ -250,7 +249,39 @@ class MaterialController extends Controller
     }
 
     public function tags(Request $request) {
-        $m_id = $request->input('m_id');
-        dump($request);die();
+        $result = [
+            'status' => false,
+            'msg' => null,
+            'data' => [],
+        ];
+        $token = $request->input('token');
+        $g = $request->input('g');
+
+        $tags = null;
+        // get public tags
+        if ($g) {
+            $tags = Tags::where('public', true)->get();
+        }
+        
+        // get personal tags
+        if ($tags === null && $token) {
+            $user = Users::where('token', $token)->first();
+            if ($user) {
+                $tags = Tags::whereHas('materials', function ($query) use ($user) {
+                    $query->where('material.user_id', $user->id);
+                })->get();
+            }
+        }
+
+        // get public materials' tags
+        if ($tags === null) {
+            $tags = Tags::whereHas('materials', function ($query) {
+                $query->where('material.public', true);
+            })->get();
+        }
+        $result['status'] = true;
+        $result['msg'] = 'get_data';
+        $result['data'] = $tags;
+        return response()->json($result);
     }
 }

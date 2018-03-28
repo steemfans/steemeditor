@@ -6,8 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tags extends Model
 {
-    public static PUBLIC_TRUE = true;
-    public static PUBLIC_FALSE = false;
+    public const PUBLIC_TRUE = true;
+    public const PUBLIC_FALSE = false;
     protected $table = 'tags';
     public $timestamps = false;
 
