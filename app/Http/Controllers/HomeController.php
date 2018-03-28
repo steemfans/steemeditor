@@ -41,7 +41,6 @@ class HomeController extends Controller
             'expires_in' => $request->input('expires_in'),
             'username' => $request->input('username'),
         ];
-        die();
         $userInfo = $this->getUserinfoByAccessToken($data['access_token']);
         $userSession = [
             'user_info' => $userInfo,
