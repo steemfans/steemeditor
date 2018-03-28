@@ -1,8 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Model\Users;
+use Illuminate\Support\Facades\DB;
 
 class HomeController extends Controller
 {
@@ -15,8 +16,11 @@ class HomeController extends Controller
           return "'{$v}'";
         }, $scScope);
 
-        $userInfo = session('user');
-        $accessToken = session('access_token');
+        $userSession = session('user');
+        $userInfo = isset($userSession['user_info'])
+                        ? $userSession['user_info'] : null;
+        $accessToken = isset($userSession['access_token'])
+                        ? $userSession['access_token'] : null;
 
         $data = [
             'title' => 'Steem Editor',
@@ -37,10 +41,34 @@ class HomeController extends Controller
             'expires_in' => $request->input('expires_in'),
             'username' => $request->input('username'),
         ];
+        die();
         $userInfo = $this->getUserinfoByAccessToken($data['access_token']);
+        $userSession = [
+            'user_info' => $userInfo,
+            'user_id' => 0,
+            'access_token' => $data['access_token'],
+        ];
         if ($userInfo['user'] === $data['username']) {
+            $dbUser = Users::where('username', $userInfo['user'])->first();
+            if ($dbUser === null) {
+                $dbUser = new Users;
+                $dbUser->username = $userInfo['user'];
+                $dbUser->origin_data = json_encode($userInfo);
+                $dbUser->token = $data['access_token'];
+                $dbUser->expire = $data['expires_in'];
+                $dbUser->last_login = time();
+                $dbUser->created_at = time();
+                $dbUser->save();
+            } else {
+                $dbUser->origin_data = json_encode($userInfo);
+                $dbUser->token = $data['access_token'];
+                $dbUser->expire = $data['expires_in'];
+                $dbUser->last_login = time();
+                $dbUser->save();
+            }
             // login success
-            session(['user' => $userInfo, 'access_token' => $data['access_token']]);
+            $userSession['user_id'] = $dbUser->id;
+            session(['user' => $userSession]);
         } else {
             // login failed
             session(['user' => []]);
@@ -50,8 +78,13 @@ class HomeController extends Controller
 
     public function logout(Request $request) {
         $accessToken = $request->input('accessToken');
-        session(['access_token' => '', 'user' => '']);
+        session(['user' => []]);
         return response()->json([]);
+    }
+
+    public function test(Request $request) {
+        $users = DB::select('select * from users where username = ?', ['ety']);
+        dump($users);die();
     }
 
     /**
