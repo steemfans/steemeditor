@@ -10,6 +10,12 @@ class Tags extends Model
     public $timestamps = false;
 
     public function materials() {
-        return $this->belongsToMany('App\Model\Material', 'material_tag', 'tag_id', 'material_id');
+        return $this->belongsToMany(
+                'App\Model\Material',
+                'material_tag',
+                'tag_id',
+                'material_id'
+            )
+            ->withPivot('user_id');
     }
 }
