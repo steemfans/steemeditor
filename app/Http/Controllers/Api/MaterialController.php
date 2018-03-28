@@ -132,8 +132,46 @@ class MaterialController extends Controller
     }
 
     public function remove(Request $request) {
+        $result = [
+            'status' => false,
+            'msg' => null,
+            'data' => [],
+        ];
         $m_id = $request->input('m_id');
-        dump($request);die();
+        $token = $request->input('token');
+
+        if (!$token) {
+            $result['status'] = false;
+            $result['msg'] = 'need_login';
+            return response()->json($result);
+        }
+
+        $user = Users::where('token', $token)->first();
+        if (!$user) {
+            $result['status'] = false;
+            $result['msg'] = 'not_find_user';
+            return response()->json($result);
+        }
+
+        $material = Material::where([
+                'id' => $m_id,
+                'user_id' => $user->id,
+            ])->first();
+        if ($material) {
+            // remove associations
+            $material->tags()->detach();
+            if ($material->delete()) {
+                $result['status'] = true;
+                $result['msg'] = 'remove_success';
+            } else {
+                $result['status'] = false;
+                $result['msg'] = 'remove_failed';
+            }
+        } else {
+            $result['status'] = false;
+            $result['msg'] = 'no_data';
+        }
+        return response()->json($result);
     }
 
     public function update(Request $request) {
