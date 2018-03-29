@@ -92,7 +92,6 @@ class MaterialController extends Controller
         if ($token) {
             $user = Users::where('token', $token)->first();
             if ($user) {
-                $where['public'] = false;
                 $where['user_id'] = $user->id;
             }
         }

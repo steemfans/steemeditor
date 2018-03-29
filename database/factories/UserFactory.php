@@ -18,7 +18,7 @@ $factory->define(App\Model\Users::class, function (Faker $faker) {
     return [
         'username' => $faker->name,
         'origin_data' => '',
-        'token' => 'test_token',
+        'token' => 'test_token_'.$faker->name,
         'expire' => $time,
         'last_login' => $time,
         'created_at' => $time,
