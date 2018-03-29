@@ -67,7 +67,7 @@ class MaterialController extends Controller
             } catch (QueryException $ex) {
                 DB::rollback();
                 $result['status'] = false;
-                $result['msg'] = $ex->get_messages();
+                $result['msg'] = $ex->getMessage();
                 return response()->json($result);
             }
         } else {
