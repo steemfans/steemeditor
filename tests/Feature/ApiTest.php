@@ -6,6 +6,8 @@ use Tests\TestCase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Model\Users;
+use App\Model\Material;
+use App\Model\Tags;
 use Illuminate\Support\Facades\DB;
 
 class ApiTest extends TestCase
@@ -98,31 +100,13 @@ class ApiTest extends TestCase
     }
 
     public function testMaterialIndex() {
-        // create test data
-        $users = $this->createTestData();
         // init data 
-        $tag = DB::select('select * from tags limit 1');
-        $materialTag = DB::select(
-            'select * from material_tag where tag_id = :tag_id limit 1',
-            [
-                'tag_id' => $tag[0]->id,
-            ]
-        );
-        $user = DB::select(
-            'select * from users where id = :id limit 1',
-            [
-                'id' => $materialTag[0]->user_id,
-            ]
-        );
-        $material = DB::select(
-            'select * from material where id = :id limit 1',
-            [
-                'id' => $materialTag[0]->material_id,
-            ]
-        );
+        $materials = Material::all();
+        $tags = $materials[0]->tags;
+        $user = $materials[0]->user;
         // test general list
         $response = $this->json('GET', '/api/materials', [
-            'tag_id' => $tag[0]->id,
+            'tag_id' => $tags[0]->id,
         ]);
         $response->assertJson([
             "status" => true,
@@ -131,12 +115,12 @@ class ApiTest extends TestCase
                 'current_page' => 1,
                 'data' => [
                     [
-                        'id' => $material[0]->id,
-                        'user_id' => $user[0]->id,
-                        'title' => $material[0]->title,
-                        'body' => $material[0]->body,
-                        'public' => $material[0]->public,
-                        'status' => $material[0]->status,
+                        'id' => $materials[0]->id,
+                        'user_id' => $materials[0]->id,
+                        'title' => $materials[0]->title,
+                        'body' => $materials[0]->body,
+                        'public' => $materials[0]->public,
+                        'status' => $materials[0]->status,
                     ],
                 ],
                 'first_page_url' => 'http://localhost/api/materials?page=1',
@@ -153,7 +137,7 @@ class ApiTest extends TestCase
         ]);
         // test user list
         $response = $this->json('GET', '/api/materials', [
-            'token' => $user[0]->token,
+            'token' => $user->token,
         ]);
         $response->assertJson([
             "status" => true,
@@ -162,12 +146,12 @@ class ApiTest extends TestCase
                 'current_page' => 1,
                 'data' => [
                     [
-                        'id' => $material[0]->id,
-                        'user_id' => $user[0]->id,
-                        'title' => $material[0]->title,
-                        'body' => $material[0]->body,
-                        'public' => $material[0]->public,
-                        'status' => $material[0]->status,
+                        'id' => $materials[0]->id,
+                        'user_id' => $materials[0]->id,
+                        'title' => $materials[0]->title,
+                        'body' => $materials[0]->body,
+                        'public' => $materials[0]->public,
+                        'status' => $materials[0]->status,
                     ],
                 ],
                 'first_page_url' => 'http://localhost/api/materials?page=1',
@@ -182,56 +166,49 @@ class ApiTest extends TestCase
                 'total' => 1,
             ],
         ]);
-        // remove test data
-        $this->removeTestData($users);
     }
 
-    private function createTestData() {
-        $users = factory(Users::class, 2)->create();
-        $response = [];
+    public function testMaterialDetail() {
+        // init data
+        $users = Users::all();
+        $privateMaterial = [];
+        $publicMaterial = [];
         foreach($users as $user) {
-            $tmpUserId = $user->id;
-            $response[$tmpUserId] = $this->json('POST', '/api/material', [
-                'body' => 'test_body_'.$tmpUserId,
-                'public' => true,
-                'tags' => ['a_'.$tmpUserId, 'b_'.$tmpUserId, 'c_'.$tmpUserId],
-                'token' => $user->token,
-            ]);
-        }
-        return $users;
-    }
-
-    private function removeTestData($users) {
-        foreach($users as $user) {
-            $tmpUserId = $user->id;
-            $results = DB::select(
-                'select * from material where body = :body and user_id = :user_id limit 1',
-                [
-                    'body' => 'test_body_'.$tmpUserId,
-                    'user_id' => $user->id,
-                ]
-            );
-            if (isset($results[0])) {
-                $mId = $results[0]->id;
-                $materialTags = DB::select(
-                    'select * from material_tag where material_id = :m_id',
-                    [
-                        'm_id' => $mId,
-                    ]
-                );
-                if ($materialTags) {
-                    foreach($materialTags as $v) {
-                        DB::delete('delete from tags where id = :id',
-                            [ 'id' => $v->tag_id ]);
-                        DB::delete('delete from material_tag where id = :id',
-                            [ 'id' => $v->id ]);
-                    }
-                }
-                DB::delete('delete from material where id = :id',
-                    [ 'id' => $mId ]);
+            $materials = $user->materials;
+            if ($materials[0]->public == false) {
+                $privateMaterial['user'] = $user;
+                $privateMaterial['material'] = $materials[0];
+            } else {
+                $publicMaterial['user'] = $user;
+                $publicMaterial['material'] = $materials[0];
             }
-            DB::delete('delete from users where id = :id',
-                [ 'id' => $user->id ]);
         }
+        // test public material detail
+        $response = $this->json('GET', '/api/material/detail', [
+            'm_id' => $publicMaterial['material']->id,
+        ]);
+        $response->assertJson([
+            "status" => true,
+            "msg" => "success",
+            'data' => $publicMaterial['material']->toArray(),
+        ]);
+        // test private material detail - no auth
+        $response = $this->json('GET', '/api/material/detail', [
+            'm_id' => $privateMaterial['material']->id,
+        ]);
+        $response->assertJson([
+            "status" => false,
+            "msg" => "no_auth",
+        ]);
+        // test private material detail - success
+        $response = $this->json('GET', '/api/material/detail', [
+            'm_id' => $privateMaterial['material']->id,
+            'token' => $privateMaterial['user']->token,
+        ]);
+        $response->assertJson([
+            "status" => true,
+            "msg" => "success",
+            "data" => $privateMaterial['material']->toArray(),
+        ]);
     }
 }
