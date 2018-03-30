@@ -115,13 +115,30 @@ class MaterialController extends Controller
 
     public function detail(Request $request) {
         $m_id = $request->input('m_id');
+        $token = $request->input('token');
         $material = Material::with(['user', 'tags'])->find($m_id);
         if ($material) {
-            return response()->json([
-                'status' => true,
-                'msg' => 'success',
-                'data' => $material,
-            ]);
+            if ($material->public == 1) {
+                return response()->json([
+                    'status' => true,
+                    'msg' => 'success',
+                    'data' => $material,
+                ]);
+            } else {
+                $user = Users::where('token', $token)->first();
+                if ($user && $material->user_id === $user->id) {
+                    return response()->json([
+                        'status' => true,
+                        'msg' => 'success',
+                        'data' => $material,
+                    ]);
+                } else {
+                    return response()->json([
+                        'status' => false,
+                        'msg' => 'no_auth',
+                    ]);
+                }
+            }
         } else {
             return response()->json([
                 'status' => false,
