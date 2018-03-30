@@ -30,6 +30,12 @@ php artisan serve
 php artisan migrate:refresh --seeder=TestSeeder
 ```
 
+2. Run phpunit
+
+```
+./vendor/bin/phpunit
+```
+
 # How to contribute
 
 Before the stable version, coontribution is not accepted.
