@@ -22,6 +22,14 @@ composer install
 php artisan serve
 ```
 
+# Test
+
+1. Add seeder
+
+```
+php artisan migrate:refresh --seeder=TestSeeder
+```
+
 # How to contribute
 
 Before the stable version, coontribution is not accepted.
