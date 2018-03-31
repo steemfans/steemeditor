@@ -3,6 +3,7 @@ import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 import router from './router';
 import App from './App.vue';
+import store from './store';
 
 // window.axios = require('axios');
 //
@@ -37,6 +38,7 @@ window.consoleLog = (resultArrOrStr, msgType = 'debug') => {
 new Vue({
   el: '#app',
   router,
+  store,
   components: { App },
   template: '<App/>',
 });

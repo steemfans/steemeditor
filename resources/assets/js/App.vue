@@ -1,10 +1,13 @@
 <template>
   <div id="app">
+    <top-nav></top-nav>
     <router-view/>
   </div>
 </template>
 
 <script>
+import TopNav from './components/TopNavComponent.vue';
+
 export default {
   name: 'App',
   data() {
@@ -12,6 +15,9 @@ export default {
       userInfo: '',
       sc2: window.sc2,
     };
+  },
+  components: {
+    TopNav,
   },
   methods: {},
   mounted() {},
