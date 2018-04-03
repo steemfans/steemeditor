@@ -23,7 +23,7 @@ class HomeController extends Controller
                         ? $userSession['access_token'] : null;
 
         $data = [
-            'title' => 'Steem Editor',
+            'title' => 'SteemEditor by ETY001',
             'dev' => $dev,
             'scApp' => $scApp,
             'scCallback' => $scCallback,

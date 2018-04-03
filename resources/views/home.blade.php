@@ -22,6 +22,7 @@
     <meta name="msapplication-TileImage" content="{{ elixir('/static/favicon/ms-icon-144x144.png') }}">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="{{ elixir('/static/font/iconfont.css') }}">
+    <link rel="stylesheet" href="{{ elixir('/plugins/editor/css/editormd.min.css') }}">
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
   </head>
   <body>
@@ -40,5 +41,14 @@
     </script>
     <div id="app"></div>
     <script src="{{ mix('/js/main.js') }}"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-116713187-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'UA-116713187-1');
+    </script>
   </body>
 </html>
