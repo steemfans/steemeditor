@@ -1,15 +1,1 @@
-/* .navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-} */
-
-body {
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: hidden;
-  height: 100%;
-  position: fixed;
-}
-
+body{top:0;bottom:0;left:0;right:0;overflow:hidden;height:100%;position:fixed}
