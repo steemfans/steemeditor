@@ -25,7 +25,7 @@
           </el-col>
         </el-row>
       </div>
-      <editor :init-content="content" v-on:contentChange="updateContent"></editor>
+      <editor :init-content="content" :editor-config="editorConfig" v-on:contentChange="updateContent"></editor>
     </el-main>
 </template>
 
@@ -39,6 +39,7 @@ import Editor from './EditorComponent.vue';
 export default {
   name: 'index',
   data() {
+    const that = this;
     return {
       userInfo: {},
       content: null,
@@ -63,6 +64,32 @@ export default {
       ],
       isUpvote: true,
       username: null,
+      editorConfig: {
+        width: '100%',
+        height: this.getEditorHeight(),
+        path: '/plugins/editor/lib/',
+        codeFold: true,
+        saveHTMLToTextarea: true,
+        watch: true,
+        searchReplace: true,
+        placeholder: 'Start your creation !!!',
+        previewCodeHighlight: false,
+        emoji: true,
+        toolbarIcons: () => [
+          'undo', 'redo', '|',
+          'bold', 'del', 'italic', 'quote', 'ucwords', 'uppercase', 'lowercase', '|',
+          'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '|',
+          'list-ul', 'list-ol', 'hr', '|',
+          'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
+          'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
+        ],
+        onload: () => {
+          window.consoleLog(['onload in indexcomponent config']);
+        },
+        onchange() {
+          that.$emit('contentChange', this.markdownTextarea[0].innerHTML);
+        },
+      },
     };
   },
   components: {
@@ -88,6 +115,10 @@ export default {
     },
   },
   methods: {
+    getEditorHeight() {
+      const totalHeight = window.innerHeight;
+      return String(totalHeight - 60 - 150 - 60);
+    },
     updateContent(data) {
       window.consoleLog(['content update', data]);
       this.$store.commit('content', data);

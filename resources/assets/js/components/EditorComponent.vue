@@ -62,7 +62,6 @@ export default {
           },
           onchange() {
             that.$emit('contentChange', this.markdownTextarea[0].innerHTML);
-            // window.consoleLog(['onchange in editor', this, this.id, this.settings, this.state]);
           },
         };
       },
@@ -95,15 +94,6 @@ export default {
   watch: {
   },
   methods: {
-    contentChange(e) {
-      window.consoleLog(['content change in editor', e]);
-      this.$emit('contentChange', e);
-    },
-    initEditorHeight() {
-      const totalHeight = window.innerHeight;
-      this.editorConfig.height = String(totalHeight - 60 - 150 - 60);
-      window.consoleLog([this.editorConfig.height, 'edit_height']);
-    },
     initEditor() {
       this.$nextTick((editorMD = window.editormd) => {
         if (editorMD) {
