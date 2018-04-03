@@ -13,122 +13,12 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 } */
 
-h1, h2 {
-  font-weight: normal;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  text-decoration: none;
-}
-.login_box {
-    width: 200px;
-    float: right;
-    padding: 10px;
-}
-
-.el-header, .el-footer {
-  /*background-color: #e4e4e4;*/
-  color: #333;
-  text-align: left;
-  line-height: 60px;
-}
-
-.el-aside {
-  /*background-color: #D3DCE6;*/
-  color: #333;
-  text-align: initial;
-  /*text-align: center;*/
-  min-height: 80%;
-}
-
-.markDown_box {
-  overflow: scroll;
+body {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
   height: 100%;
-}
-
-/*.el-main {
-  background-color: #E9EEF3;
-  color: #333;
-  text-align: center;
-  line-height: 400px;
-}*/
-
-body > .el-container {
-  margin-bottom: 40px;
-}
-
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 260px;
-}
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
-}
-
-.body_box {
-  margin-top: 20px;
-  width: 90%;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  -webkit-transform: translateX(-50%);
-  -moz-transform: translateX(-50%);
-  -ms-transform: translateX(-50%);
-  -o-transform: translateX(-50%);
-  height: 90%;
-}
-
-.userInput {
-  height: 100%;
-}
-
-.markDown {
-  min-height: 97%;
-  width: 97%;
-  background-color: #fff;
-  /*border: 1px solid #e1e3e9;*/
-  padding: 0px 10px 2px;
-}
-
-.el-dropdown {
-  vertical-align: top;
-}
-
-.el-dropdown + .el-dropdown {
-  margin-left: 15px;
-}
-
-.el-icon-arrow-down {
-  font-size: 12px;
-}
-
-.el-dropdown-selfdefine {
-  margin: 8px;
-}
-
-.text_info {
-  margin-top: 10px;
-}
-.text_info .el-input {
-  display: block;
-  margin-bottom: 10px;
-}
-.logo_box {
-    width: 200px;
-    float: left;
-    line-height: 60px;
-    font-size: 25px;
-    background-image: url(/static/steem-editor.png);
-    background-size: 50px 40px;
-    background-repeat: no-repeat;
-    background-position: center left;
-    padding-left: 25px;
+  position: fixed;
 }

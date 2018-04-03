@@ -9,11 +9,19 @@ const debug = process.env.NODE_ENV !== 'production';
 export default new Vuex.Store({
   strict: debug,
   state: {
+    logStatus: false,
+    userInfo: {},
     content: null,
     tags: null,
     title: null,
   },
   mutations: {
+    logStatus(state, logStatus) {
+      state.logStatus = logStatus;
+    },
+    userInfo(state, userInfo) {
+      state.userInfo = userInfo;
+    },
     content(state, content) {
       state.content = content;
     },
@@ -25,6 +33,12 @@ export default new Vuex.Store({
     },
   },
   getters: {
+    logStatus(state) {
+      return state.logStatus;
+    },
+    userInfo(state) {
+      return state.userInfo;
+    },
     content(state) {
       return state.content;
     },
@@ -38,9 +52,9 @@ export default new Vuex.Store({
   plugins: [
     createPersistedState({
       storage: {
-        getItem: key => localStorage.getItem(key),
-        setItem: (key, value) => localStorage.setItem(key, value),
-        removeItem: key => localStorage.removeItem(key),
+        getItem: key => window.localStorage.getItem(key),
+        setItem: (key, value) => window.localStorage.setItem(key, value),
+        removeItem: key => window.localStorage.removeItem(key),
       },
     }),
   ],

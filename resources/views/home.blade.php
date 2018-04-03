@@ -22,6 +22,7 @@
     <meta name="msapplication-TileImage" content="{{ elixir('/static/favicon/ms-icon-144x144.png') }}">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="{{ elixir('/static/font/iconfont.css') }}">
+    <link rel="stylesheet" href="{{ elixir('/plugins/editor/css/editormd.min.css') }}">
     <link rel="stylesheet" href="{{ mix('/css/app.css') }}">
   </head>
   <body>

@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import ElementUI from 'element-ui';
+import Sc2 from 'sc2-sdk';
 import 'element-ui/lib/theme-chalk/index.css';
 import router from './router';
 import App from './App.vue';
@@ -25,6 +26,7 @@ import store from './store';
 
 Vue.use(ElementUI);
 
+window.sc = Sc2.Initialize(window.Laravel.sc2);
 window.debugEditor = !(process.env.NODE_ENV === 'production');
 window.consoleLog = (resultArrOrStr, msgType = 'debug') => {
   if (msgType === 'msg'
@@ -39,6 +41,16 @@ new Vue({
   el: '#app',
   router,
   store,
+  mounted() {
+    if (window.Laravel.accessToken) {
+      window.sc.setAccessToken(window.Laravel.accessToken);
+      this.$store.commit('logStatus', true);
+      this.$store.commit('userInfo', window.Laravel.userInfo || {});
+    } else {
+      this.$store.commit('logStatus', false);
+      this.$store.commit('userInfo', {});
+    }
+  },
   components: { App },
   template: '<App/>',
 });
