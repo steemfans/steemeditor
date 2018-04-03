@@ -74,7 +74,6 @@ export default {
     };
   },
   mounted() {
-    this.initEditorHeight();
     if (window.jQuery === undefined) {
       $s([
         'js/jquery-3.3.1.min.js',

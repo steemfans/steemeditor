@@ -76,6 +76,7 @@ export default {
         previewCodeHighlight: false,
         emoji: true,
         toolbarIcons: () => [
+          'material', '|',
           'undo', 'redo', '|',
           'bold', 'del', 'italic', 'quote', 'ucwords', 'uppercase', 'lowercase', '|',
           'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '|',
@@ -83,6 +84,14 @@ export default {
           'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
           'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
         ],
+        toolbarIconTexts: {
+          material: 'Material Manager',
+        },
+        toolbarHandlers: {
+          material(cm, icon, cursor, selection) {
+            window.consoleLog([cm, icon, cursor, selection]);
+          },
+        },
         onload: () => {
           window.consoleLog(['onload in indexcomponent config']);
         },

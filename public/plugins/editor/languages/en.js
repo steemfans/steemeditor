@@ -41,7 +41,8 @@
                 clear            : "Clear",
                 search           : "Search",
                 help             : "Help",
-                info             : "About " + exports.title
+                info             : "About " + exports.title,
+                material         : "Material Manager"
             },
             buttons : {
                 enter  : "Enter",
