@@ -194,7 +194,7 @@ export default {
                         beneficiaries: [
                           {
                             account: 'steemeditor.bot',
-                            weight: 1500,
+                            weight: 500,
                           },
                         ],
                       },
@@ -221,7 +221,7 @@ export default {
                         beneficiaries: [
                           {
                             account: 'steemeditor.bot',
-                            weight: 1500,
+                            weight: 500,
                           },
                         ],
                       },
