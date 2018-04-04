@@ -86,6 +86,8 @@ export default {
           });
         });
       });
+    } else {
+      this.initEditor();
     }
   },
   destoryed() {

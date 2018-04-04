@@ -11,6 +11,7 @@
           mode="horizontal"
           :router=true>
           <el-menu-item index="/">Editor</el-menu-item>
+          <el-menu-item index="/material">Material Manager</el-menu-item>
           <!--<el-menu-item index="material">Material Manager</el-menu-item>
           <el-menu-item index="4">
             <a href="#" target="_blank"></a>
@@ -32,7 +33,7 @@ export default {
   name: 'topnav',
   data() {
     return {
-      activeIndex: '/',
+      activeIndex: this.$route.path,
       userInfo: {},
       username: null,
       logStatus: false,
