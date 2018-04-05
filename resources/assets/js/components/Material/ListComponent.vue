@@ -39,7 +39,7 @@ export default {
     loadMaterial() {
     },
     handleAddMaterialMsg(data) {
-      window.consoleLog(['list component', data]);
+      window.consoleLog(['list component handleAddMaterialMsg', data]);
       this.$emit('addMaterialMsg', data);
     },
     handleClick(e) {

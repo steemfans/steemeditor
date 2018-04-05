@@ -17,6 +17,10 @@ export default {
       type: String,
       default: '',
     },
+    insertContent: {
+      type: String,
+      default: '',
+    },
     type: {
       type: String,
       default: 'editor',
@@ -93,6 +97,14 @@ export default {
   destoryed() {
   },
   watch: {
+    insertContent(val) {
+      if (val !== null) {
+        window.consoleLog(['insert content to editor', val]);
+        this.instance.insertValue(val);
+        this.instance.focus();
+        this.$emit('clearInsertContent');
+      }
+    },
   },
   methods: {
     initEditor() {

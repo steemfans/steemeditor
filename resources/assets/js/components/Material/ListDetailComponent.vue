@@ -10,6 +10,26 @@
         </div>
       </el-card>
     </el-col>
+    <el-col :span="24">
+      <el-card class="card">
+        <div class="preview"
+          @click="addMaterialToEditor"
+          @mouseleave="mouseOutCard"
+          @mouseenter="mouseOverCard"
+          v-html="testHtml">
+        </div>
+      </el-card>
+    </el-col>
+    <el-col :span="24">
+      <el-card class="card">
+        <div class="preview"
+          @click="addMaterialToEditor"
+          @mouseleave="mouseOutCard"
+          @mouseenter="mouseOverCard"
+          v-html="testHtml">
+        </div>
+      </el-card>
+    </el-col>
   </el-row>
 </template>
 <script>
@@ -47,7 +67,7 @@ export default {
       window.consoleLog(['click to add']);
       e.cancelBubble = true;
       e.stopPropagation();
-      this.$emit('addMaterialMsg', { message: e });
+      this.$emit('addMaterialMsg', { md: tt });
     },
     preventEl() {
       const materialEl = this.$refs.material_list.$el;
