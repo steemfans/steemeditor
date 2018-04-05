@@ -25,7 +25,13 @@
           </el-col>
         </el-row>
       </div>
-      <editor :init-content="content" :editor-config="editorConfig" v-on:contentChange="updateContent"></editor>
+      <editor
+        v-if="editorConfig !== null"
+        ref="mainEditor"
+        :init-content="content"
+        :editor-config="editorConfig"
+        v-on:contentChange="updateContent">
+      </editor>
     </el-main>
 </template>
 
@@ -39,7 +45,6 @@ import Editor from './EditorComponent.vue';
 export default {
   name: 'index',
   data() {
-    const that = this;
     return {
       userInfo: {},
       content: null,
@@ -64,47 +69,49 @@ export default {
       ],
       isUpvote: true,
       username: null,
-      editorConfig: {
-        width: '100%',
-        height: this.getEditorHeight(),
-        path: '/plugins/editor/lib/',
-        codeFold: true,
-        saveHTMLToTextarea: true,
-        watch: true,
-        searchReplace: true,
-        placeholder: 'Start your creation !!!',
-        previewCodeHighlight: false,
-        emoji: true,
-        toolbarIcons: () => [
-          'material', '|',
-          'undo', 'redo', '|',
-          'bold', 'del', 'italic', 'quote', 'ucwords', 'uppercase', 'lowercase', '|',
-          'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '|',
-          'list-ul', 'list-ol', 'hr', '|',
-          'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
-          'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
-        ],
-        toolbarIconTexts: {
-          material: 'Material Manager',
-        },
-        toolbarHandlers: {
-          material(cm, icon, cursor, selection) {
-            window.consoleLog([cm, icon, cursor, selection]);
-          },
-        },
-        onload: () => {
-          window.consoleLog(['onload in indexcomponent config']);
-        },
-        onchange() {
-          that.$emit('contentChange', this.markdownTextarea[0].innerHTML);
-        },
-      },
+      editorConfig: null,
     };
   },
   components: {
     Editor,
   },
   mounted() {
+    const refs = this.$refs;
+    this.editorConfig = {
+      width: '100%',
+      height: this.getEditorHeight(),
+      path: '/plugins/editor/lib/',
+      codeFold: true,
+      saveHTMLToTextarea: true,
+      watch: true,
+      searchReplace: true,
+      placeholder: 'Start your creation !!!',
+      previewCodeHighlight: false,
+      emoji: true,
+      toolbarIcons: () => [
+        'material', '|',
+        'undo', 'redo', '|',
+        'bold', 'del', 'italic', 'quote', 'ucwords', 'uppercase', 'lowercase', '|',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '|',
+        'list-ul', 'list-ol', 'hr', '|',
+        'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
+        'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
+      ],
+      toolbarIconTexts: {
+        material: 'Material Manager',
+      },
+      toolbarHandlers: {
+        material(cm, icon, cursor, selection) {
+          window.consoleLog([cm, icon, cursor, selection]);
+        },
+      },
+      onload: () => {
+        window.consoleLog(['onload in indexcomponent config']);
+      },
+      onchange() {
+        refs.mainEditor.$emit('contentChange', this.markdownTextarea[0].innerHTML);
+      },
+    };
     this.$nextTick(() => {
       this.logStatus = this.$store.getters.logStatus;
       this.userInfo = this.$store.getters.userInfo;

@@ -120,6 +120,9 @@ export default {
         }
       });
     },
+    test() {
+      window.consoleLog(['test']);
+    },
   },
 };
 </script>
