@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside width="400px">
-      <material-list :height="asideHeight"></material-list>
+      <material-list :height="asideHeight" @addMaterialMsg="handleAddMaterialMsg"></material-list>
     </el-aside>
     <el-main>Main</el-main>
   </el-container>
@@ -25,6 +25,9 @@ export default {
     getAsideHeight() {
       const totalHeight = window.innerHeight;
       return `${String(totalHeight - 80)}px`;
+    },
+    handleAddMaterialMsg(data) {
+      window.consoleLog(['material component', data]);
     },
   },
 };

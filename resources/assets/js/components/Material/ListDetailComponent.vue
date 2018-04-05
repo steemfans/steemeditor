@@ -1,13 +1,13 @@
 <template>
   <el-row class="material-list" ref="material_list">
     <el-col :span="24">
-      <el-card class="card" shadow="never">
-        <div class="preview" v-on:click="addMaterialToEditor" v-html="testHtml"></div>
-      </el-card>
-    </el-col>
-    <el-col :span="24">
-      <el-card class="card" shadow="hover">
-        <div class="preview" v-on:click="addMaterialToEditor" v-html="testHtml"></div>
+      <el-card class="card">
+        <div class="preview"
+          @click="addMaterialToEditor"
+          @mouseleave="mouseOutCard"
+          @mouseenter="mouseOverCard"
+          v-html="testHtml">
+        </div>
       </el-card>
     </el-col>
   </el-row>
@@ -37,9 +37,17 @@ export default {
   methods: {
     getData() {
     },
+    mouseOutCard(e) {
+      e.target.parentElement.style.cssText = '';
+    },
+    mouseOverCard(e) {
+      e.target.parentElement.style.cssText = 'background-color: #eeefff';
+    },
     addMaterialToEditor(e) {
+      window.consoleLog(['click to add']);
       e.cancelBubble = true;
       e.stopPropagation();
+      this.$emit('addMaterialMsg', { message: e });
     },
     preventEl() {
       const materialEl = this.$refs.material_list.$el;

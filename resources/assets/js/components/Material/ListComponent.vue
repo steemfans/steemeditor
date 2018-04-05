@@ -5,10 +5,10 @@
         <el-col :span="24">
           <el-tabs v-model="currentTab" @tab-click="handleClick">
             <el-tab-pane label="Public" name="publicMaterial">
-              <list-detail :mtype="'public'"></list-detail>
+              <list-detail :mtype="'public'" @addMaterialMsg="handleAddMaterialMsg"></list-detail>
             </el-tab-pane>
             <el-tab-pane label="Private" name="privateMaterial">
-              <list-detail :mtype="'private'"></list-detail>
+              <list-detail :mtype="'private'" @addMaterialMsg="handleAddMaterialMsg"></list-detail>
             </el-tab-pane>
           </el-tabs>
         </el-col>
@@ -37,6 +37,10 @@ export default {
   },
   methods: {
     loadMaterial() {
+    },
+    handleAddMaterialMsg(data) {
+      window.consoleLog(['list component', data]);
+      this.$emit('addMaterialMsg', data);
     },
     handleClick(e) {
       window.consoleLog([e]);
