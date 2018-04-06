@@ -66,7 +66,7 @@ export default {
             'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
           ],
           onload: () => {
-            window.consoleLog(['onload', this.initContent]);
+            window.consoleLog(['onload editor component']);
           },
           onchange() {
             that.$emit('contentChange', this.markdownTextarea[0].innerHTML);

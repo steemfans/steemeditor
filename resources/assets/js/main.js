@@ -37,7 +37,7 @@ window.consoleLog = (resultArrOrStr, msgType = 'debug') => {
 };
 
 /* eslint-disable no-new */
-new Vue({
+window.mainVue = new Vue({
   el: '#app',
   router,
   store,

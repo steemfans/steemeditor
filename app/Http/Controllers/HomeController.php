@@ -29,6 +29,7 @@ class HomeController extends Controller
             'scCallback' => $scCallback,
             'scScope' => implode(',', $tmpScope),
             'username' => isset($userInfo['user']) ? $userInfo['user'] : null,
+            'userid' => isset($userSession['user_id']) ? $userSession['user_id'] : null,
             'accessToken' => isset($accessToken) ? $accessToken : null,
             'userInfo' => json_encode($userInfo),
         ];

@@ -45,7 +45,6 @@ export default {
       this.userInfo = this.$store.getters.userInfo;
       this.logStatus = this.$store.getters.logStatus;
       this.username = this.logStatus ? this.userInfo.name : null;
-      window.consoleLog(['status', this.userInfo, this.logStatus, this.username]);
     });
   },
   methods: {
@@ -71,8 +70,8 @@ export default {
             this.$store.commit('title', null);
             this.$store.commit('tags', null);
             this.$message = 'Logout success!';
+            window.consoleLog(['logout', result]);
             window.location.href = window.location.origin;
-            window.consoleLog([result, 'logout']);
           })
           .catch((err) => {
             window.consoleLog([err, 'logout err']);

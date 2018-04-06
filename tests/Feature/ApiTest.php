@@ -22,7 +22,7 @@ class ApiTest extends TestCase
         // test no token
         $response = $this->json('POST', '/api/material', [
             'body' => 'test_body',
-            'public' => false,
+            'material_type' => false,
             'tags' => ['a', 'b', 'c'],
         ]);
         $response

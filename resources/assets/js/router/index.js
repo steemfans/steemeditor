@@ -17,11 +17,9 @@ export default new Router({
       name: 'material',
       component: MaterialComponent,
       beforeEnter: (to, from, next) => {
-        window.consoleLog(['router', to, from, next]);
         if (window.Laravel.userid) {
           next();
         } else {
-          console.log(window.mainVue);
           window.mainVue.$notify.error({
             title: 'Error',
             message: 'Please Login first',

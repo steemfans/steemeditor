@@ -1,7 +1,7 @@
 <template>
   <el-container>
     <el-aside width="400px">
-      <material-list :height="asideHeight" @addMaterialMsg="handleAddMaterialMsg"></material-list>
+      <material-list :all-public="false" :height="asideHeight" @addMaterialMsg="handleAddMaterialMsg"></material-list>
     </el-aside>
     <el-main>
       <el-row class="toolbar">
@@ -84,7 +84,7 @@ export default {
         'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
       ],
       onload: () => {
-        window.consoleLog(['onload in material manager component config', this]);
+        window.consoleLog(['onload in material manager component config']);
       },
       onchange() {
         refs.materialEditor.$emit('materialChange', this.markdownTextarea[0].innerHTML);
@@ -113,7 +113,7 @@ export default {
     handleAddMaterialMsg(data) {
       window.consoleLog(['material component handleAddMaterialMsg', data]);
       this.editMode();
-      this.insertContent = data.md;
+      this.insertContent = data.body;
     },
     handleClearInsertContent() {
       window.consoleLog(['clear insert content']);

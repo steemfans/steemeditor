@@ -84,21 +84,35 @@ class MaterialController extends Controller
     public function index(Request $request) {
         $tag_id = $request->input('tag_id');
         $token = $request->input('token');
+        $userId = $request->input('userid');
+        // 0 for private or 1 for public
+        $public = (int)$request->input('type', 1);
         $limit = 15;
+        // $limit = 1;
 
         $where = [];
-        $where['public'] = true; // default true
+        $where['public'] = $public;
         $result = [
             'status' => false,
             'msg' => null,
             'data' => [],
         ];
-        if ($token) {
-            $user = Users::where('token', $token)->first();
+        if ($userId) {
+            $user = Users::find($userId);
             if ($user) {
                 $where['user_id'] = $user->id;
             }
         }
+        if ($public === 0) {
+            if ($user->token === $token) {
+                $where['public'] = 0; 
+            } else {
+                $result['status'] = false;
+                $result['msg'] = 'no_auth';
+                return response()->json($result);
+            }
+        }
+
         $dao = Material::where($where);
 
         if ($tag_id) {
