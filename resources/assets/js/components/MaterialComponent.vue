@@ -1,7 +1,13 @@
 <template>
   <el-container>
     <el-aside width="400px">
-      <material-list :all-public="false" :height="asideHeight" @addMaterialMsg="handleAddMaterialMsg"></material-list>
+      <material-list
+        :all-public="false"
+        :height="asideHeight"
+        :refresh="refresh"
+        @addMaterialMsg="handleAddMaterialMsg"
+        @handleRefresh="handleRefresh">
+      </material-list>
     </el-aside>
     <el-main>
       <el-row class="toolbar">
@@ -57,6 +63,7 @@ export default {
       replaceContent: null,
       content: null,
       asideHeight: this.getAsideHeight(),
+      refresh: false,
       editorConfig: null,
     };
   },
@@ -137,6 +144,9 @@ export default {
         this.replaceContent = null;
       }
     },
+    handleRefresh() {
+      this.refresh = false;
+    },
     exitEdit() {
       this.clearEditor();
       this.init();
@@ -198,12 +208,47 @@ export default {
               type: 'success',
             });
           }
+          this.refresh = true;
         })
         .catch((err) => {
           window.consoleLog([err, 'logout err']);
         });
     },
-    saveMaterial() {},
+    saveMaterial() {
+      if (this.content === '' || this.content === null) {
+        this.$notify.error({
+          title: 'Error',
+          message: 'Please input content.',
+        });
+        return;
+      }
+      const data = {
+        m_id: this.materialId,
+        token: window.Laravel.accessToken,
+        body: this.content,
+        type: this.materialType,
+      };
+      axios.post('/api/material/update', data)
+        .then((res) => {
+          const r = res.data;
+          if (r.status === false) {
+            this.$notify.error({
+              title: 'Error',
+              message: r.msg,
+            });
+          } else {
+            this.$notify({
+              title: 'Success',
+              message: 'Save successful!',
+              type: 'success',
+            });
+          }
+          this.refresh = true;
+        })
+        .catch((err) => {
+          window.consoleLog(['update material fail', err], true);
+        });
+    },
     deleteMaterial() {
       this.$confirm(
         'Material will be deleted. Do you want to continue?',
@@ -234,6 +279,8 @@ export default {
                 type: 'success',
               });
             }
+            this.refresh = true;
+            this.exitEdit();
           })
           .catch((err) => {
             window.consoleLog(['remove material fail', err], true);

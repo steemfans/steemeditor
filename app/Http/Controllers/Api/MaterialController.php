@@ -113,7 +113,7 @@ class MaterialController extends Controller
             }
         }
 
-        $dao = Material::where($where);
+        $dao = Material::where($where)->orderBy('id', 'DESC');
 
         if ($tag_id) {
             $tagDao = Tags::find($tag_id);
@@ -218,7 +218,7 @@ class MaterialController extends Controller
         $token = $request->input('token');
         $title = $request->input('title');
         $body = $request->input('body');
-        $public = $request->input('public');
+        $public = (int)$request->input('type');
         $tags = $request->input('tags');
 
         if (!$token) {

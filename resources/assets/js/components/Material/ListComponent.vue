@@ -35,6 +35,7 @@ export default {
   props: {
     height: String,
     allPublic: Boolean,
+    refresh: Boolean,
   },
   data() {
     return {
@@ -52,6 +53,15 @@ export default {
   },
   components: {
     listDetail,
+  },
+  watch: {
+    refresh(val) {
+      if (val === true) {
+        this.loadPublicMaterial(this.publicPage);
+        this.loadPrivateMaterial(this.privatePage);
+        this.$emit('handleRefresh');
+      }
+    },
   },
   methods: {
     loadPublicMaterial(page) {
@@ -100,8 +110,10 @@ export default {
     },
     handlePageChange(data) {
       if (data.id === 'publicM') {
+        this.publicPage = data.page;
         this.loadPublicMaterial(data.page);
       } else {
+        this.privatePage = data.page;
         this.loadPrivateMaterial(data.page);
       }
     },
