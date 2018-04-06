@@ -5,6 +5,7 @@ import 'element-ui/lib/theme-chalk/index.css';
 import router from './router';
 import App from './App.vue';
 import store from './store';
+import './directives';
 
 // window.axios = require('axios');
 //

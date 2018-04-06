@@ -90,8 +90,8 @@ export default {
         'bold', 'del', 'italic', 'quote', 'ucwords', 'uppercase', 'lowercase', '|',
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '|',
         'list-ul', 'list-ol', 'hr', '|',
-        'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
-        'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
+        'link', 'reference-link', 'image', 'code', 'code-block', 'table', '|',
+        'goto-line', 'clear', 'search', 'watch', 'fullscreen',
       ],
       onload: () => {
         window.consoleLog(['onload in material manager component config']);
