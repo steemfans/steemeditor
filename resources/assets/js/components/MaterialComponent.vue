@@ -5,7 +5,7 @@
     </el-aside>
     <el-main>
       <el-row class="toolbar">
-        <el-col :span="6">
+        <el-col :span="4">
           Mode:
           <el-tag v-if="mode === 'Create'" size="mini">{{ mode }}</el-tag>
           <el-tag v-if="mode === 'Edit'" type="success" size="mini">{{ mode }}</el-tag>
@@ -20,9 +20,11 @@
             inactive-text="Private">
           </el-switch>
         </el-col>
-        <el-col :span="6">
-          <el-button type="success" size="mini" @click="save">Save</el-button>
-          <el-button type="danger" size="mini" v-if="mode === 'Edit'" @click="exitEdit">Exit Edit</el-button>
+        <el-col :span="8">
+          <el-button type="success" size="mini" v-if="mode === 'Create'" @click="addNew">Create</el-button>
+          <el-button type="success" size="mini" v-if="mode === 'Edit'" @click="saveMaterial">Save</el-button>
+          <el-button type="primary" size="mini" v-if="mode === 'Edit'" @click="exitEdit">Exit Edit</el-button>
+          <el-button type="danger" size="mini" v-if="mode === 'Edit'" @click="deleteMaterial">Delete</el-button>
         </el-col>
       </el-row>
       <editor
@@ -52,6 +54,7 @@ export default {
       materialId: null,
       materialType: true,
       insertContent: null,
+      replaceContent: null,
       content: null,
       asideHeight: this.getAsideHeight(),
       editorConfig: null,
@@ -95,6 +98,8 @@ export default {
     init() {
       this.createMode();
       this.content = null;
+      this.materialId = null;
+      this.materialType = true;
     },
     createMode() {
       this.mode = 'Create';
@@ -113,7 +118,9 @@ export default {
     handleAddMaterialMsg(data) {
       window.consoleLog(['material component handleAddMaterialMsg', data]);
       this.editMode();
-      this.insertContent = data.body;
+      this.materialType = !!data.public;
+      this.materialId = data.id;
+      this.replaceInEditor(data.body);
     },
     handleClearInsertContent() {
       window.consoleLog(['clear insert content']);
@@ -123,10 +130,26 @@ export default {
       window.consoleLog(['update content']);
       this.content = data;
     },
-    exitEdit() {
-      this.createMode();
+    handleResetClear() {
+      this.clear = false;
+      if (this.replaceContent !== null) {
+        this.insertContent = this.replaceContent;
+        this.replaceContent = null;
+      }
     },
-    save() {
+    exitEdit() {
+      this.clearEditor();
+      this.init();
+    },
+    clearEditor() {
+      this.clear = true;
+    },
+    replaceInEditor(txt) {
+      window.consoleLog(['replace', txt]);
+      this.replaceContent = txt;
+      this.clearEditor();
+    },
+    addNew() {
       window.consoleLog(['save material', this.content]);
       if (this.content === '' || this.content === null) {
         this.$notify.error({
@@ -168,7 +191,7 @@ export default {
               message: msg,
             });
           } else {
-            this.clear = true;
+            this.clearEditor();
             this.$notify({
               title: 'Success',
               message: 'Save successful.',
@@ -180,8 +203,42 @@ export default {
           window.consoleLog([err, 'logout err']);
         });
     },
-    handleResetClear() {
-      this.clear = false;
+    saveMaterial() {},
+    deleteMaterial() {
+      this.$confirm(
+        'Material will be deleted. Do you want to continue?',
+        'Notify',
+        {
+          confirmButtonText: 'Confirm',
+          confirmButtonClass: 'el-button--danger',
+          cancelButtonText: 'Cancel',
+          type: 'danger',
+        },
+      ).then(() => {
+        const data = {
+          m_id: this.materialId,
+          token: window.Laravel.accessToken,
+        };
+        axios.post('/api/material/remove', data)
+          .then((res) => {
+            const r = res.data;
+            if (r.status === false) {
+              this.$notify.error({
+                title: 'Error',
+                message: r.msg,
+              });
+            } else {
+              this.$notify({
+                title: 'Success',
+                message: 'Delete success!',
+                type: 'success',
+              });
+            }
+          })
+          .catch((err) => {
+            window.consoleLog(['remove material fail', err], true);
+          });
+      });
     },
   },
 };
