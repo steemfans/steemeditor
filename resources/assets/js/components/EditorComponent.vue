@@ -21,6 +21,10 @@ export default {
       type: String,
       default: '',
     },
+    clearContent: {
+      type: Boolean,
+      default: false,
+    },
     type: {
       type: String,
       default: 'editor',
@@ -74,7 +78,6 @@ export default {
   data() {
     return {
       instance: null,
-      content: null,
     };
   },
   mounted() {
@@ -103,6 +106,12 @@ export default {
         this.instance.insertValue(val);
         this.instance.focus();
         this.$emit('clearInsertContent');
+      }
+    },
+    clearContent(val) {
+      if (val === true) {
+        window.jQuery.proxy(this.instance.toolbarHandlers.clear, this.instance)();
+        this.$emit('resetClear');
       }
     },
   },

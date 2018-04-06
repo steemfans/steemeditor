@@ -62,9 +62,6 @@ export default {
       });
 
       this.sc.revokeToken((logoutErr, result) => {
-        window.localStorage.removeItem('userInput');
-        window.localStorage.removeItem('title');
-        window.localStorage.removeItem('tag');
         axios.post('/logout', { accessToken: window.Laravel.accessToken })
           .then(() => {
             loading.close();

@@ -31,12 +31,15 @@
         :editor-config="editorConfig"
         :insert-content="insertContent"
         @clearInsertContent="handleClearInsertContent"
-        @materialChange="handleMaterialChange">
+        @materialChange="handleMaterialChange"
+        :clear-content="clear"
+        @resetClear="handleResetClear">
       </editor>
     </el-main>
   </el-container>
 </template>
 <script>
+import axios from 'axios';
 import MaterialList from './Material/ListComponent.vue';
 import Editor from './EditorComponent.vue';
 
@@ -44,6 +47,7 @@ export default {
   name: 'material',
   data() {
     return {
+      clear: false,
       mode: 'Create',
       materialId: null,
       materialType: true,
@@ -88,6 +92,10 @@ export default {
     };
   },
   methods: {
+    init() {
+      this.createMode();
+      this.content = null;
+    },
     createMode() {
       this.mode = 'Create';
     },
@@ -120,6 +128,60 @@ export default {
     },
     save() {
       window.consoleLog(['save material', this.content]);
+      if (this.content === '' || this.content === null) {
+        this.$notify.error({
+          title: 'Error',
+          message: 'Please input content.',
+        });
+        return;
+      }
+      const data = {
+        title: null,
+        body: this.content,
+        tags: [],
+        material_type: this.materialType,
+        token: window.Laravel.accessToken,
+      };
+      const loading = this.$loading({
+        lock: true,
+        text: 'Sending',
+        spinner: 'el-icon-loading',
+        background: 'rgba(0, 0, 0, 0.7)',
+      });
+      axios.post('/api/material', data)
+        .then((res) => {
+          window.consoleLog(['save material result', res]);
+          loading.close();
+          const r = res.data;
+          if (r.status === false) {
+            let msg = '';
+            switch (r.msg) {
+              case 'need_token':
+                msg = 'Please login first.';
+                break;
+              default:
+                msg = `Unknown error: ${res.msg}`;
+                break;
+            }
+            this.$notify.error({
+              title: 'Error',
+              message: msg,
+            });
+          } else {
+            this.clear = true;
+            this.$notify({
+              title: 'Success',
+              message: 'Save successful.',
+              type: 'success',
+            });
+          }
+        })
+        .catch((err) => {
+          window.consoleLog([err, 'logout err']);
+        });
+    },
+    handleResetClear() {
+      this.clear = false;
     },
   },
 };

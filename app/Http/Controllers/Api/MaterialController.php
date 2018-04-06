@@ -17,7 +17,7 @@ class MaterialController extends Controller
     public function create(Request $request) {
         $title = $request->input('title');
         $body = $request->input('body');
-        $public = $request->input('public');
+        $public = $request->input('material_type');
         $tags = $request->input('tags');
         $token = $request->input('token');
 
@@ -32,11 +32,13 @@ class MaterialController extends Controller
             return response()->json($result);
         }
         
+        /* temp commented
         if (!$tags) {
             $result['status'] = false;
             $result['msg'] = 'need_tags';
             return response()->json($result);
         }
+        */
         
         $user = Users::where('token', $token)->first();
 
@@ -50,6 +52,7 @@ class MaterialController extends Controller
                 $materialModel->public = $public;
                 $materialModel->status = true;
                 $materialModel->save();
+                /* temp commented
                 foreach ($tags as $tag) {
                     $tagModel = Tags::where('tag_content', $tag)->first();
                     if (!$tagModel) {
@@ -59,6 +62,7 @@ class MaterialController extends Controller
                     }
                     $materialModel->tags()->attach($tagModel->id, ['user_id' => $user->id]);
                 }
+                */
                 $result['status'] = true;
                 $result['msg'] = 'success';
                 $result['data'] = $materialModel->id;
