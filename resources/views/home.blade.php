@@ -35,6 +35,7 @@
           scope: [{!! $scScope !!}],
         },
         username: '{{ $username }}',
+        userid: '{{ $userid }}',
         accessToken: '{{ $accessToken }}',
         userInfo: {!! $userInfo !!},
       }

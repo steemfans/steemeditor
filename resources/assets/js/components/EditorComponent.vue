@@ -17,6 +17,14 @@ export default {
       type: String,
       default: '',
     },
+    insertContent: {
+      type: String,
+      default: '',
+    },
+    clearContent: {
+      type: Boolean,
+      default: false,
+    },
     type: {
       type: String,
       default: 'editor',
@@ -58,11 +66,10 @@ export default {
             'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
           ],
           onload: () => {
-            window.consoleLog(['onload', this.initContent]);
+            window.consoleLog(['onload editor component']);
           },
           onchange() {
             that.$emit('contentChange', this.markdownTextarea[0].innerHTML);
-            // window.consoleLog(['onchange in editor', this, this.id, this.settings, this.state]);
           },
         };
       },
@@ -71,11 +78,9 @@ export default {
   data() {
     return {
       instance: null,
-      content: null,
     };
   },
   mounted() {
-    this.initEditorHeight();
     if (window.jQuery === undefined) {
       $s([
         'js/jquery-3.3.1.min.js',
@@ -88,22 +93,29 @@ export default {
           });
         });
       });
+    } else {
+      this.initEditor();
     }
   },
   destoryed() {
   },
   watch: {
+    insertContent(val) {
+      if (val !== null) {
+        window.consoleLog(['insert content to editor', val]);
+        this.instance.insertValue(val);
+        this.instance.focus();
+        this.$emit('clearInsertContent');
+      }
+    },
+    clearContent(val) {
+      if (val === true) {
+        window.jQuery.proxy(this.instance.toolbarHandlers.clear, this.instance)();
+        this.$emit('resetClear');
+      }
+    },
   },
   methods: {
-    contentChange(e) {
-      window.consoleLog(['content change in editor', e]);
-      this.$emit('contentChange', e);
-    },
-    initEditorHeight() {
-      const totalHeight = window.innerHeight;
-      this.editorConfig.height = String(totalHeight - 60 - 150 - 60);
-      window.consoleLog([this.editorConfig.height, 'edit_height']);
-    },
     initEditor() {
       this.$nextTick((editorMD = window.editormd) => {
         if (editorMD) {
@@ -116,6 +128,9 @@ export default {
           }
         }
       });
+    },
+    test() {
+      window.consoleLog(['test']);
     },
   },
 };

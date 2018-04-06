@@ -17,7 +17,7 @@ class MaterialController extends Controller
     public function create(Request $request) {
         $title = $request->input('title');
         $body = $request->input('body');
-        $public = $request->input('public');
+        $public = $request->input('material_type');
         $tags = $request->input('tags');
         $token = $request->input('token');
 
@@ -32,11 +32,13 @@ class MaterialController extends Controller
             return response()->json($result);
         }
         
+        /* temp commented
         if (!$tags) {
             $result['status'] = false;
             $result['msg'] = 'need_tags';
             return response()->json($result);
         }
+        */
         
         $user = Users::where('token', $token)->first();
 
@@ -50,6 +52,7 @@ class MaterialController extends Controller
                 $materialModel->public = $public;
                 $materialModel->status = true;
                 $materialModel->save();
+                /* temp commented
                 foreach ($tags as $tag) {
                     $tagModel = Tags::where('tag_content', $tag)->first();
                     if (!$tagModel) {
@@ -59,6 +62,7 @@ class MaterialController extends Controller
                     }
                     $materialModel->tags()->attach($tagModel->id, ['user_id' => $user->id]);
                 }
+                */
                 $result['status'] = true;
                 $result['msg'] = 'success';
                 $result['data'] = $materialModel->id;
@@ -80,22 +84,36 @@ class MaterialController extends Controller
     public function index(Request $request) {
         $tag_id = $request->input('tag_id');
         $token = $request->input('token');
+        $userId = $request->input('userid');
+        // 0 for private or 1 for public
+        $public = (int)$request->input('type', 1);
         $limit = 15;
+        // $limit = 1;
 
         $where = [];
-        $where['public'] = true; // default true
+        $where['public'] = $public;
         $result = [
             'status' => false,
             'msg' => null,
             'data' => [],
         ];
-        if ($token) {
-            $user = Users::where('token', $token)->first();
+        if ($userId) {
+            $user = Users::find($userId);
             if ($user) {
                 $where['user_id'] = $user->id;
             }
         }
-        $dao = Material::where($where);
+        if ($public === 0) {
+            if ($user->token === $token) {
+                $where['public'] = 0; 
+            } else {
+                $result['status'] = false;
+                $result['msg'] = 'no_auth';
+                return response()->json($result);
+            }
+        }
+
+        $dao = Material::where($where)->orderBy('id', 'DESC');
 
         if ($tag_id) {
             $tagDao = Tags::find($tag_id);
@@ -200,7 +218,7 @@ class MaterialController extends Controller
         $token = $request->input('token');
         $title = $request->input('title');
         $body = $request->input('body');
-        $public = $request->input('public');
+        $public = (int)$request->input('type');
         $tags = $request->input('tags');
 
         if (!$token) {

@@ -11,6 +11,7 @@
           mode="horizontal"
           :router=true>
           <el-menu-item index="/">Editor</el-menu-item>
+          <el-menu-item index="/material">Material Manager</el-menu-item>
           <!--<el-menu-item index="material">Material Manager</el-menu-item>
           <el-menu-item index="4">
             <a href="#" target="_blank"></a>
@@ -32,7 +33,7 @@ export default {
   name: 'topnav',
   data() {
     return {
-      activeIndex: '/',
+      activeIndex: this.$route.path,
       userInfo: {},
       username: null,
       logStatus: false,
@@ -44,7 +45,6 @@ export default {
       this.userInfo = this.$store.getters.userInfo;
       this.logStatus = this.$store.getters.logStatus;
       this.username = this.logStatus ? this.userInfo.name : null;
-      window.consoleLog(['status', this.userInfo, this.logStatus, this.username]);
     });
   },
   methods: {
@@ -61,9 +61,6 @@ export default {
       });
 
       this.sc.revokeToken((logoutErr, result) => {
-        window.localStorage.removeItem('userInput');
-        window.localStorage.removeItem('title');
-        window.localStorage.removeItem('tag');
         axios.post('/logout', { accessToken: window.Laravel.accessToken })
           .then(() => {
             loading.close();
@@ -73,8 +70,8 @@ export default {
             this.$store.commit('title', null);
             this.$store.commit('tags', null);
             this.$message = 'Logout success!';
+            window.consoleLog(['logout', result]);
             window.location.href = window.location.origin;
-            window.consoleLog([result, 'logout']);
           })
           .catch((err) => {
             window.consoleLog([err, 'logout err']);

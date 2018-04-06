@@ -1,4 +1,5 @@
 <template>
+  <el-container>
     <el-main>
       <div id="post_info">
         <el-row>
@@ -25,8 +26,32 @@
           </el-col>
         </el-row>
       </div>
-      <editor :init-content="content" v-on:contentChange="updateContent"></editor>
+      <editor
+        v-if="editorConfig !== null"
+        ref="mainEditor"
+        :init-content="content"
+        :insert-content="insertContent"
+        @clearInsertContent="handleClearInsertContent"
+        :editor-config="editorConfig"
+        @contentChange="updateContent">
+      </editor>
     </el-main>
+    <el-dialog
+      ref="dialog__wrapper"
+      v-dialogDrag
+      width="30%"
+      title="Material"
+      :modal="false"
+      :visible.sync="dialogVisible">
+      <material-list
+        v-dialogDragWidth="$refs.dialog__wrapper"
+        :all-public="true"
+        :height="asideHeight"
+        :refresh="false"
+        @addMaterialMsg="handleAddMaterialMsg">
+      </material-list>
+    </el-dialog>
+  </el-container>
 </template>
 
 <script>
@@ -35,6 +60,7 @@ import secureRandom from 'secure-random';
 import getSlug from 'speakingurl';
 import steem from 'steem';
 import Editor from './EditorComponent.vue';
+import MaterialList from './Material/ListComponent.vue';
 
 export default {
   name: 'index',
@@ -47,6 +73,9 @@ export default {
       logStatus: false,
       sc: window.sc,
       reward: 50,
+      asideHeight: this.getAsideHeight(),
+      dialogVisible: false,
+      insertContent: null,
       rewardOptions: [
         {
           value: 100,
@@ -63,12 +92,56 @@ export default {
       ],
       isUpvote: true,
       username: null,
+      editorConfig: null,
     };
   },
   components: {
     Editor,
+    MaterialList,
   },
   mounted() {
+    const refs = this.$refs;
+    const that = this;
+    this.editorConfig = {
+      width: '100%',
+      height: this.getEditorHeight(),
+      path: '/plugins/editor/lib/',
+      codeFold: true,
+      saveHTMLToTextarea: true,
+      watch: true,
+      searchReplace: true,
+      placeholder: 'Start your creation !!!',
+      previewCodeHighlight: false,
+      emoji: true,
+      toolbarIcons: () => [
+        'material', '|',
+        'undo', 'redo', '|',
+        'bold', 'del', 'italic', 'quote', 'ucwords', 'uppercase', 'lowercase', '|',
+        'h1', 'h2', 'h3', 'h4', 'h5', 'h6', '|',
+        'list-ul', 'list-ol', 'hr', '|',
+        'link', 'reference-link', 'image', 'code', 'code-block', 'table', '|',
+        'goto-line', 'clear', 'search', 'watch', 'fullscreen',
+      ],
+      toolbarIconTexts: {
+        material: 'Material',
+      },
+      toolbarHandlers: {
+        material(cm, icon, cursor, selection) {
+          if (that.dialogVisible === false) {
+            that.dialogVisible = true;
+          } else {
+            that.dialogVisible = false;
+          }
+          window.consoleLog(['toolbar in index', cm, icon, cursor, selection]);
+        },
+      },
+      onload: () => {
+        window.consoleLog(['onload in indexcomponent config']);
+      },
+      onchange() {
+        refs.mainEditor.$emit('contentChange', this.markdownTextarea[0].innerHTML);
+      },
+    };
     this.$nextTick(() => {
       this.logStatus = this.$store.getters.logStatus;
       this.userInfo = this.$store.getters.userInfo;
@@ -88,6 +161,23 @@ export default {
     },
   },
   methods: {
+    getAsideHeight() {
+      // const totalHeight = window.innerHeight;
+      // return `${String(totalHeight - 480)}px`;
+      return '400px';
+    },
+    getEditorHeight() {
+      const totalHeight = window.innerHeight;
+      return String(totalHeight - 60 - 150 - 60);
+    },
+    handleAddMaterialMsg(data) {
+      window.consoleLog(['material component handleAddMaterialMsg', data]);
+      this.insertContent = data.body;
+    },
+    handleClearInsertContent() {
+      window.consoleLog(['clear insert content in index component']);
+      this.insertContent = null;
+    },
     updateContent(data) {
       window.consoleLog(['content update', data]);
       this.$store.commit('content', data);
@@ -154,7 +244,7 @@ export default {
                         beneficiaries: [
                           {
                             account: 'steemeditor.bot',
-                            weight: 1500,
+                            weight: 500,
                           },
                         ],
                       },
@@ -181,7 +271,7 @@ export default {
                         beneficiaries: [
                           {
                             account: 'steemeditor.bot',
-                            weight: 1500,
+                            weight: 500,
                           },
                         ],
                       },
