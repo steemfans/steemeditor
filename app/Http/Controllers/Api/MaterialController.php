@@ -104,7 +104,7 @@ class MaterialController extends Controller
             }
         }
         if ($public === 0) {
-            if ($user->token === $token) {
+            if ($user && $user->token === $token) {
                 $where['public'] = 0; 
             } else {
                 $result['status'] = false;
