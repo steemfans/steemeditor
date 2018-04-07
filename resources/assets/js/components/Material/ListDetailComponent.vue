@@ -117,7 +117,7 @@ export default {
   overflow: scroll;
   height: 200px;
 }
-.preview * {
+.preview img {
   height: 160px;
 }
 </style>

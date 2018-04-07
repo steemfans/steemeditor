@@ -109,6 +109,7 @@ export default {
       }
     },
     clearContent(val) {
+      window.consoleLog(['clear editor content', val]);
       if (val === true) {
         window.jQuery.proxy(this.instance.toolbarHandlers.clear, this.instance)();
         this.$emit('resetClear');

@@ -22,7 +22,7 @@
           </el-col>
           <el-col :md="6" :lg="4" :xl="2" style="text-align: right;">
             <el-button type="primary" @click="postArticle">Post</el-button>
-            <el-button type="danger" @click="cancelArticle">Clear</el-button>
+            <el-button type="danger" @click="clearPost">Clear</el-button>
           </el-col>
         </el-row>
       </div>
@@ -31,9 +31,11 @@
         ref="mainEditor"
         :init-content="content"
         :insert-content="insertContent"
+        :clear-content="clear"
         @clearInsertContent="handleClearInsertContent"
         :editor-config="editorConfig"
-        @contentChange="updateContent">
+        @contentChange="updateContent"
+        @resetClear="handleResetClear">
       </editor>
     </el-main>
     <el-dialog
@@ -76,6 +78,7 @@ export default {
       asideHeight: this.getAsideHeight(),
       dialogVisible: false,
       insertContent: null,
+      clear: false,
       rewardOptions: [
         {
           value: 100,
@@ -178,17 +181,24 @@ export default {
       window.consoleLog(['clear insert content in index component']);
       this.insertContent = null;
     },
+    handleResetClear() {
+      window.consoleLog(['clear editor content']);
+      this.clear = false;
+    },
     updateContent(data) {
       window.consoleLog(['content update', data]);
       this.$store.commit('content', data);
+      this.content = data;
     },
-    cancelArticle() {
+    clearPost() {
+      window.consoleLog(['clear post']);
       this.$store.commit('title', null);
       this.$store.commit('tags', null);
       this.$store.commit('content', null);
       this.title = null;
       this.tags = null;
       this.content = null;
+      this.clear = true;
     },
     async postArticle() {
       window.consoleLog(['post article', this.logStatus, this.title, this.tags, this.content]);
@@ -332,6 +342,7 @@ export default {
                 message: 'Post successfully',
                 type: 'success',
               });
+              this.clearPost();
             })
             .catch((err) => {
               switch (err.error_description) {
@@ -351,9 +362,11 @@ export default {
               window.consoleLog([err, 'postArticle catch'], 'msg');
             });
         } else {
+          window.consoleLog(['post error', typeof this.content, this.content]);
+          const msg = `Title: ${this.title}\nTags: ${this.tags}\nContent Length: ${this.content.length}`;
           this.$notify({
             title: 'Warning',
-            message: 'Title or tags or content is empty.',
+            message: `Title or tags or content is empty.\n${msg}`,
             type: 'warning',
           });
         }
