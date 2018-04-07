@@ -1,34 +1,45 @@
 import Vue from 'vue';
-import Router from 'vue-router';
+import VueRouter from 'vue-router';
 import IndexComponent from '../components/IndexComponent.vue';
 import MaterialComponent from '../components/MaterialComponent.vue';
 
-Vue.use(Router);
+Vue.use(VueRouter);
 
-export default new Router({
+const router = new VueRouter({
   routes: [
     {
       path: '/',
       name: 'index',
       component: IndexComponent,
+      meta: {
+        requiresAuth: false,
+      },
     },
     {
       path: '/material',
       name: 'material',
       component: MaterialComponent,
-      beforeEnter: (to, from, next) => {
-        if (window.Laravel.userid) {
-          next();
-        } else {
-          window.mainVue.$notify.error({
-            title: 'Error',
-            message: 'Please Login first',
-          });
-          next({
-            path: '/',
-          });
-        }
+      meta: {
+        requiresAuth: true,
       },
     },
   ],
 });
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    if (window.Laravel.userid === '') {
+      router.app.$notify.error({
+        title: 'Error',
+        message: 'Please login first',
+      });
+      next('/');
+    } else {
+      next();
+    }
+  } else {
+    next();
+  }
+});
+
+export default router;
