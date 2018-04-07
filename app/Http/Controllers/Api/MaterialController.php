@@ -102,6 +102,8 @@ class MaterialController extends Controller
             if ($user) {
                 $where['user_id'] = $user->id;
             }
+        } else {
+            $user = null;
         }
         if ($public === 0) {
             if ($user && $user->token === $token) {
