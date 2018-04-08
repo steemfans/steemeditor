@@ -21,7 +21,7 @@
             <el-checkbox v-model="isUpvote" label="Upvote post" border></el-checkbox>
           </el-col>
           <el-col :md="6" :lg="4" :xl="2" style="text-align: right;">
-            <el-button type="primary" @click="postArticle">Post</el-button>
+            <el-button type="primary" @click="toPost">Post</el-button>
             <el-button type="danger" @click="clearPost">Clear</el-button>
           </el-col>
         </el-row>
@@ -199,6 +199,27 @@ export default {
       this.tags = null;
       this.content = null;
       this.clear = true;
+    },
+    toPost() {
+      const msg = 'With each article posted by steeemeditor, steeemeditor will extract 5% of the article’s revenue as bonus.';
+      this.$confirm(
+        msg,
+        'Notify',
+        {
+          confirmButtonText: 'Continue',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        },
+      )
+        .then(() => {
+          this.postArticle();
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: 'Post has been cancled.',
+          });
+        });
     },
     async postArticle() {
       window.consoleLog(['post article', this.logStatus, this.title, this.tags, this.content]);
