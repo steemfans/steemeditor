@@ -16,7 +16,7 @@ class MaterialController extends Controller
 {
     public function create(Request $request) {
         $title = $request->input('title');
-        $body = $request->input('body');
+        $body = html_entity_decode($request->input('body'));
         $public = $request->input('material_type');
         $tags = $request->input('tags');
         $token = $request->input('token');
@@ -219,7 +219,7 @@ class MaterialController extends Controller
         $m_id = $request->input('m_id');
         $token = $request->input('token');
         $title = $request->input('title');
-        $body = $request->input('body');
+        $body = html_entity_decode($request->input('body'));
         $public = (int)$request->input('type');
         $tags = $request->input('tags');
 
