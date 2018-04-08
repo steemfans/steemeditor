@@ -65,6 +65,9 @@ export default {
             'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
             'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
           ],
+          imageUpload: true,
+          imageFormats: ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'],
+          imageUploadURL: '/api/file/upload',
           onload: () => {
             window.consoleLog(['onload editor component']);
           },

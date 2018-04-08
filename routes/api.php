@@ -19,3 +19,5 @@ Route::get('material/detail', 'Api\MaterialController@detail')->name('material_d
 Route::post('material/remove', 'Api\MaterialController@remove')->name('material_remove');
 Route::post('material/update', 'Api\MaterialController@update')->name('material_update');
 Route::get('material/tags', 'Api\MaterialController@tags')->name('material_tags');
+
+Route::post('file/upload', 'Api\FileController@upload')->name('file_upload');

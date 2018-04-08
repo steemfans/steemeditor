@@ -138,6 +138,9 @@ export default {
           window.consoleLog(['toolbar in index', cm, icon, cursor, selection]);
         },
       },
+      imageUpload: true,
+      imageFormats: ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'],
+      imageUploadURL: '/api/file/upload',
       onload: () => {
         window.consoleLog(['onload in indexcomponent config']);
       },
