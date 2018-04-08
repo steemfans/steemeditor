@@ -16,10 +16,45 @@ cd steem-editor
 composer install
 ```
 
-3. Run server
+3. Deploy DB
+
+Before deploying , please edit your `.env` file to make sure the connection informaiton right.
+And then run this command.
+
+```
+php artisan migrate
+```
+
+4. Create symbolic link to upload resouce
+
+```
+php artisan storage:link
+```
+
+5. Run server
 
 ```
 php artisan serve
+```
+
+# How to develope frontend
+
+* install dependences
+
+```
+npm install
+```
+
+* develope mode
+
+```
+npm run watch
+```
+
+* build production
+
+```
+npm run production
 ```
 
 # How to contribute
