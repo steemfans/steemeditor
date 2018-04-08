@@ -1,5 +1,5 @@
 <template>
-  <div :id="id" class="main-editor">
+  <div :id="id" class="main-editor" @paste="handlePaste">
     <textarea v-model="initContent"></textarea>
   </div>
 </template>
@@ -65,6 +65,9 @@ export default {
             'link', 'reference-link', 'image', 'code', 'code-block', 'table', 'pagebreak', '|',
             'goto-line', 'clear', 'search', 'preview', 'watch', 'fullscreen',
           ],
+          imageUpload: true,
+          imageFormats: ['jpg', 'jpeg', 'gif', 'png', 'bmp', 'webp'],
+          imageUploadURL: '/api/file/upload',
           onload: () => {
             window.consoleLog(['onload editor component']);
           },
@@ -132,6 +135,27 @@ export default {
     },
     test() {
       window.consoleLog(['test']);
+    },
+    handlePaste(e) {
+      window.consoleLog(['handle paste', e]);
+      // chrome
+      if (e.clipboardData && e.clipboardData.items[0].type.indexOf('image') > -1) {
+        const file = e.clipboardData.items[0].getAsFile();
+        const xhr = new XMLHttpRequest();
+        const fd = new FormData();
+        xhr.open('POST', '/api/file/upload', true);
+        xhr.onload = () => {
+          const res = JSON.parse(xhr.responseText);
+          window.consoleLog(['xhr_res', res]);
+          if (res.success === 1) {
+            const imgMD = `![](${res.url})`;
+            this.instance.insertValue(imgMD);
+            this.instance.focus();
+          }
+        };
+        fd.append('editormd-image-file', file); // this.result得到图片的base64
+        xhr.send(fd);
+      }
     },
   },
 };
