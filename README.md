@@ -37,7 +37,7 @@ php artisan storage:link
 php artisan serve
 ```
 
-# How to develope frontend
+# How to develop frontend
 
 * install dependences
 
@@ -45,7 +45,7 @@ php artisan serve
 npm install
 ```
 
-* develope mode
+* develop mode
 
 ```
 npm run watch
