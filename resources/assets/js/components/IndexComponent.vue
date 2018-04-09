@@ -113,6 +113,7 @@ export default {
       saveHTMLToTextarea: true,
       watch: true,
       searchReplace: true,
+      htmlDecode : "style,script,iframe|on*",
       placeholder: 'Start your creation !!!',
       previewCodeHighlight: false,
       emoji: true,
