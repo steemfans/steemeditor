@@ -81,6 +81,7 @@ export default {
       codeFold: true,
       saveHTMLToTextarea: true,
       watch: true,
+      htmlDecode: 'style,script,iframe|on*',
       searchReplace: true,
       placeholder: 'Manage your material !!!',
       previewCodeHighlight: false,

@@ -19,7 +19,7 @@
         </el-menu>
       </el-col>
       <el-col :span="6" style="padding: 10px 0;text-align: right;">
-        <el-dropdown>
+        <el-dropdown v-if="username">
           <span class="el-dropdown-link">
             {{ username }}<i class="el-icon-arrow-down el-icon--right"></i>
           </span>

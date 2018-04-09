@@ -54,7 +54,7 @@ export default {
           watch: true,
           searchReplace: true,
           placeholder: 'Start your creation !!!',
-          // htmlDecode: 'style,script,iframe|on*',
+          htmlDecode: 'style,script,iframe|on*',
           previewCodeHighlight: false,
           emoji: true,
           toolbarIcons: () => [
