@@ -146,7 +146,7 @@ export default {
         window.consoleLog(['onload in indexcomponent config']);
       },
       onchange() {
-        refs.mainEditor.$emit('contentChange', this.markdownTextarea[0].innerHTML);
+        refs.mainEditor.$emit('contentChange', this.markdownTextarea[0].innerText);
       },
     };
     this.$nextTick(() => {
@@ -259,7 +259,7 @@ export default {
             },
           ];
           operations.push(comment);
-
+          window.consoleLog(['post_content', this.content]);
           // reward
           switch (this.reward) {
             case 100:
