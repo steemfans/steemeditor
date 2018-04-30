@@ -9,7 +9,7 @@
           <el-col :md="9" :lg="10" :xl="12">
             <el-input v-model="tags" placeholder="Tags (separate by space)"></el-input>
           </el-col>
-          <el-col :md="9" :lg="10" :xl="10" style="text-align: right;">
+          <el-col :md="9" :lg="10" :xl="8" style="text-align: right;">
             <el-select v-model="reward" placeholder="Reward">
               <el-option
                 v-for="item in rewardOptions"
@@ -20,7 +20,7 @@
             </el-select>
             <el-checkbox v-model="isUpvote" label="Upvote post" border></el-checkbox>
           </el-col>
-          <el-col :md="6" :lg="4" :xl="2" style="text-align: right;">
+          <el-col :md="6" :lg="4" :xl="4" style="text-align: right;">
             <el-button type="primary" @click="toPost">Post</el-button>
             <el-button type="danger" @click="clearPost">Clear</el-button>
           </el-col>
