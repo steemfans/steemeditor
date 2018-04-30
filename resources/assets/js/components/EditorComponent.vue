@@ -72,7 +72,7 @@ export default {
             window.consoleLog(['onload editor component']);
           },
           onchange() {
-            that.$emit('contentChange', this.markdownTextarea[0].innerHTML);
+            that.$emit('contentChange', this.markdownTextarea[0].innerText);
           },
         };
       },

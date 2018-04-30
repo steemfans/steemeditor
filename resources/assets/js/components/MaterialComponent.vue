@@ -98,7 +98,7 @@ export default {
         window.consoleLog(['onload in material manager component config']);
       },
       onchange() {
-        refs.materialEditor.$emit('materialChange', this.markdownTextarea[0].innerHTML);
+        refs.materialEditor.$emit('materialChange', this.markdownTextarea[0].innerText);
       },
     };
   },
