@@ -12,10 +12,7 @@
           :router=true>
           <el-menu-item index="/">Editor</el-menu-item>
           <el-menu-item index="/material">Material Manager</el-menu-item>
-          <!--<el-menu-item index="material">Material Manager</el-menu-item>
-          <el-menu-item index="4">
-            <a href="#" target="_blank"></a>
-          </el-menu-item>-->
+          <el-menu-item index="/voteme">Vote ME!!!</el-menu-item>
         </el-menu>
       </el-col>
       <el-col :span="6" style="padding: 10px 0;text-align: right;">

@@ -23,10 +23,23 @@ const router = new VueRouter({
         requiresAuth: true,
       },
     },
+    {
+      path: '/voteme',
+      name: 'voteme',
+      meta: {
+        requiresAuth: false,
+      },
+    },
+    // <a href="https://steemconnect.com/sign/account-witness-vote?witness=ety001&approve=1" target="_blank">Vote ME!!!</a>
   ],
 });
 
 router.beforeEach((to, from, next) => {
+  if (to.name === 'voteme') {
+    window.open('https://steemconnect.com/sign/account-witness-vote?witness=ety001&approve=1');
+    window.location = '/';
+    next(false);
+  }
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (window.Laravel.userid === '') {
       router.app.$notify.error({
