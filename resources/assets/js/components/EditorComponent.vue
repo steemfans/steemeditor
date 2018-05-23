@@ -46,6 +46,8 @@ export default {
       default() {
         const that = this;
         return {
+          atLink: false,
+          emailLink: false,
           width: this.width,
           height: this.height,
           path: '/plugins/editor/lib/',

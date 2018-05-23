@@ -74,6 +74,8 @@ export default {
   mounted() {
     const refs = this.$refs;
     this.editorConfig = {
+      atLink: false,
+      emailLink: false,
       vueInstance: true,
       width: '100%',
       height: this.getEditorHeight(),

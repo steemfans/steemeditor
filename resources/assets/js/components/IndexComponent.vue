@@ -106,6 +106,8 @@ export default {
     const refs = this.$refs;
     const that = this;
     this.editorConfig = {
+      atLink: false,
+      emailLink: false,
       width: '100%',
       height: this.getEditorHeight(),
       path: '/plugins/editor/lib/',
