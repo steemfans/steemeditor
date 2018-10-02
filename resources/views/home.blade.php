@@ -29,7 +29,6 @@
     <script>
       Laravel = {
         sc2: {
-          baseURL: 'https://v2.steemconnect.com',
           app: '{{ $scApp }}',
           callbackURL: '{{ $scCallback }}',
           scope: [{!! $scScope !!}],
