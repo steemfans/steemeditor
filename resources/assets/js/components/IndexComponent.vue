@@ -57,6 +57,7 @@
 </template>
 
 <script>
+import axios from 'axios';
 import base58 from 'bs58';
 import secureRandom from 'secure-random';
 import getSlug from 'speakingurl';
@@ -361,6 +362,14 @@ export default {
           });
           this.sc.broadcast(operations)
             .then((res) => {
+              const data = {
+                title: comment[1].title,
+                username: comment[1].author,
+                token: window.Laravel.accessToken,
+              };
+              axios.post('/api/post/queue', data)
+                .then(queueRes => console.log('add into queue success', queueRes))
+                .catch(queueErr => console.log('add into queue failed', queueErr));
               this.$store.commit('content');
               this.$store.commit('title');
               this.$store.commit('tags');
