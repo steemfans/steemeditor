@@ -359,17 +359,20 @@ export default {
               this.clearPost();
             })
             .catch((err) => {
+              infoNotify.close();
               switch (err.error_description) {
                 case 'body.size() > 0: Body is empty':
                   this.$notify.error({
                     title: 'Warning',
                     message: 'Body is empty.',
+                    duration: 5000,
                   });
                   break;
                 default:
                   this.$notify.error({
                     title: 'Unknown Error',
                     message: err.error_description,
+                    duration: 5000,
                   });
                   break;
               }
