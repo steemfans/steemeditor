@@ -275,7 +275,19 @@ export default {
                   percent_steem_dollars: 0,
                   allow_votes: true,
                   allow_curation_rewards: true,
-                  extensions: [],
+                  extensions: [
+                    [
+                      0,
+                      {
+                        beneficiaries: [
+                          {
+                            account: 'steemeditor.bot',
+                            weight: 500,
+                          },
+                        ],
+                      },
+                    ],
+                  ],
                 },
               ];
 
@@ -290,7 +302,19 @@ export default {
                   percent_steem_dollars: 10000,
                   allow_votes: true,
                   allow_curation_rewards: true,
-                  extensions: [],
+                  extensions: [
+                    [
+                      0,
+                      {
+                        beneficiaries: [
+                          {
+                            account: 'steemeditor.bot',
+                            weight: 500,
+                          },
+                        ],
+                      },
+                    ],
+                  ],
                 },
               ];
               break;
