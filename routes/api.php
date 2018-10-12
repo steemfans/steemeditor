@@ -21,3 +21,5 @@ Route::post('material/update', 'Api\MaterialController@update')->name('material_
 Route::get('material/tags', 'Api\MaterialController@tags')->name('material_tags');
 
 Route::post('file/upload', 'Api\FileController@upload')->name('file_upload');
+
+Route::post('post/queue', 'Api\PostQueueController@create')->name('post_queue_create');
