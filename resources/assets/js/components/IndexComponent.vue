@@ -238,7 +238,7 @@ export default {
           // json metadata
           const jsonMetadata = {
             tags: tagList,
-            app: 'steemeditor/0.1.0',
+            app: 'steemeditor/0.2.0',
             format: 'markdown',
             app_url: 'https://steemeditor.com',
           };
@@ -275,19 +275,7 @@ export default {
                   percent_steem_dollars: 0,
                   allow_votes: true,
                   allow_curation_rewards: true,
-                  extensions: [
-                    [
-                      0,
-                      {
-                        beneficiaries: [
-                          {
-                            account: 'steemeditor.bot',
-                            weight: 500,
-                          },
-                        ],
-                      },
-                    ],
-                  ],
+                  extensions: [],
                 },
               ];
 
@@ -302,19 +290,7 @@ export default {
                   percent_steem_dollars: 10000,
                   allow_votes: true,
                   allow_curation_rewards: true,
-                  extensions: [
-                    [
-                      0,
-                      {
-                        beneficiaries: [
-                          {
-                            account: 'steemeditor.bot',
-                            weight: 500,
-                          },
-                        ],
-                      },
-                    ],
-                  ],
+                  extensions: [],
                 },
               ];
               break;
