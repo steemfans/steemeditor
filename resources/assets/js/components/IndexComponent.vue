@@ -354,9 +354,10 @@ export default {
           operations.push(vote);
 
           // post comment
-          this.$notify.info({
+          const infoNotify = this.$notify.info({
             title: 'Please wait',
             message: 'Sending data.',
+            duration: 0,
           });
           this.sc.broadcast(operations)
             .then((res) => {
@@ -364,6 +365,7 @@ export default {
               this.$store.commit('title');
               this.$store.commit('tags');
               window.consoleLog([res, 'postArticle then']);
+              infoNotify.close();
               this.$notify({
                 title: 'Success',
                 message: 'Post successfully',
