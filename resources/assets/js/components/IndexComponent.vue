@@ -363,7 +363,7 @@ export default {
           this.sc.broadcast(operations)
             .then((res) => {
               const data = {
-                title: comment[1].title,
+                title: comment[1].permlink,
                 username: comment[1].author,
                 token: window.Laravel.accessToken,
               };
