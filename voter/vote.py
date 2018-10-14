@@ -46,8 +46,10 @@ def main():
                             where id = %s'''
                     db.execute(sql, (p[0],))
                     print('vote '+p[1]+'/'+p[2]+' success!')
+                time.sleep(3)
             except Exception as e:
                 print('vote '+p[1]+'/'+p[2]+' failed!', e)
+                time.sleep(3)
     else:
         print('no posts')
 
