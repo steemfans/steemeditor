@@ -10,14 +10,13 @@ start_time = (now_time - datetime.timedelta(hours=24)).strftime('%Y-%m-%d 0:00:0
 end_time = now_time.strftime('%Y-%m-%d 0:00:00')
 
 env_dist = os.environ
-db_host = env_dist.get('DATA_HOST')
-db_port = int(env_dist.get('DATA_PORT'))
-db_user = env_dist.get('DATA_USER')
-db_pass = env_dist.get('DATA_PASS')
+db_host = env_dist.get('DB_HOST')
+db_port = int(env_dist.get('DB_PORT'))
+db_user = env_dist.get('DB_USER')
+db_pass = env_dist.get('DB_PASS')
+db_name = env_dist.get('DB_NAME')
 user_private_key = env_dist.get('STEEM_POST_KEY')
 account_name = 'steemeditor.bot'
-
-db_name = 'steemeditor'
 
 nodes = ['https://api.steemit.com']
 s = Steem(nodes, keys=[user_private_key])
