@@ -3,10 +3,10 @@ Steem Editor is a smart editor for steem. Its purpose is to enhance the writing 
 
 # How to Build
 
-1. Pull repo
+1. Clone repo
 
 ```
-git pull https://github.com/ety001/steem-editor.git
+git clone https://github.com/ety001/steem-editor.git
 ```
 
 2. Install composer
