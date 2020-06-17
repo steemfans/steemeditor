@@ -62,7 +62,7 @@ import base58 from 'bs58';
 import secureRandom from 'secure-random';
 import getSlug from 'speakingurl';
 import steem from 'steem';
-import steemuri from 'steem-uri';
+import { encodeOps } from 'steem-uri';
 import Editor from './EditorComponent.vue';
 import MaterialList from './Material/ListComponent.vue';
 
@@ -382,7 +382,7 @@ export default {
           //   message: 'Sending data.',
           //   duration: 0,
           // });
-          const data = steemuri.encodeOps(operations, {
+          const data = encodeOps(operations, {
             callback: `https://${window.Laravel.baseUrl}?tx={{id}}`,
           }).replace('steem://', '');
           window.consoleLog(['steem uri:', data]);
