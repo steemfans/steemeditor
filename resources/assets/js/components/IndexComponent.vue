@@ -105,7 +105,7 @@ export default {
     MaterialList,
   },
   mounted() {
-    if (Laravel.txId) {
+    if (window.Laravel.txId) {
       const data = this.$store.getters.postQueueData;
       window.consoleLog(['postQueueData', data]);
       axios.post('/api/post/queue', data)
@@ -123,7 +123,7 @@ export default {
       this.clearPost();
       setTimeout(() => {
         window.consoleLog(['clear txid']);
-        axios.get('/callback').then(()=>{}).catch(()=>{});
+        axios.get('/callback').then(() => {}).catch(() => {});
       });
     }
     const refs = this.$refs;
@@ -383,7 +383,7 @@ export default {
           //   duration: 0,
           // });
           const data = steemuri.encodeOps(operations, {
-            callback: `https://?tx={{id}}`,
+            callback: `https://${window.Laravel.baseUrl}?tx={{id}}`,
           }).replace('steem://', '');
           window.consoleLog(['steem uri:', data]);
           this.$store.commit('postQueueData', {
@@ -391,7 +391,7 @@ export default {
             username: comment[1].author,
             token: window.Laravel.accessToken,
           });
-          const signUrl = `${Laravel.sc2.baseURL}/${data}`;
+          const signUrl = `${window.Laravel.sc2.baseURL}/${data}`;
           window.consoleLog(['sign url:', signUrl]);
           window.location = signUrl;
         } else {
