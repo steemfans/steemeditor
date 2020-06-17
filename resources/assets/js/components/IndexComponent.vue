@@ -62,6 +62,7 @@ import base58 from 'bs58';
 import secureRandom from 'secure-random';
 import getSlug from 'speakingurl';
 import steem from 'steem';
+import steemuri from 'steem-uri';
 import Editor from './EditorComponent.vue';
 import MaterialList from './Material/ListComponent.vue';
 
@@ -104,6 +105,27 @@ export default {
     MaterialList,
   },
   mounted() {
+    if (Laravel.txId) {
+      const data = this.$store.getters.postQueueData;
+      window.consoleLog(['postQueueData', data]);
+      axios.post('/api/post/queue', data)
+        .then(queueRes => console.info('add into queue success', queueRes))
+        .catch(queueErr => console.error('add into queue failed', queueErr));
+      this.$store.commit('content');
+      this.$store.commit('title');
+      this.$store.commit('tags');
+      this.$store.commit('postQueueData');
+      this.$notify({
+        title: 'Success',
+        message: 'Post successfully',
+        type: 'success',
+      });
+      this.clearPost();
+      setTimeout(() => {
+        window.consoleLog(['clear txid']);
+        axios.get('/callback').then(()=>{}).catch(()=>{});
+      });
+    }
     const refs = this.$refs;
     const that = this;
     this.editorConfig = {
@@ -355,53 +377,23 @@ export default {
           operations.push(vote);
 
           // post comment
-          const infoNotify = this.$notify.info({
-            title: 'Please wait',
-            message: 'Sending data.',
-            duration: 0,
+          // const infoNotify = this.$notify.info({
+          //   title: 'Please wait',
+          //   message: 'Sending data.',
+          //   duration: 0,
+          // });
+          const data = steemuri.encodeOps(operations, {
+            callback: `https://?tx={{id}}`,
+          }).replace('steem://', '');
+          window.consoleLog(['steem uri:', data]);
+          this.$store.commit('postQueueData', {
+            title: comment[1].permlink,
+            username: comment[1].author,
+            token: window.Laravel.accessToken,
           });
-          this.sc.broadcast(operations)
-            .then((res) => {
-              const data = {
-                title: comment[1].permlink,
-                username: comment[1].author,
-                token: window.Laravel.accessToken,
-              };
-              axios.post('/api/post/queue', data)
-                .then(queueRes => console.log('add into queue success', queueRes))
-                .catch(queueErr => console.log('add into queue failed', queueErr));
-              this.$store.commit('content');
-              this.$store.commit('title');
-              this.$store.commit('tags');
-              window.consoleLog([res, 'postArticle then']);
-              infoNotify.close();
-              this.$notify({
-                title: 'Success',
-                message: 'Post successfully',
-                type: 'success',
-              });
-              this.clearPost();
-            })
-            .catch((err) => {
-              infoNotify.close();
-              switch (err.error_description) {
-                case 'body.size() > 0: Body is empty':
-                  this.$notify.error({
-                    title: 'Warning',
-                    message: 'Body is empty.',
-                    duration: 5000,
-                  });
-                  break;
-                default:
-                  this.$notify.error({
-                    title: 'Unknown Error',
-                    message: err.error_description,
-                    duration: 5000,
-                  });
-                  break;
-              }
-              window.consoleLog([err, 'postArticle catch'], 'msg');
-            });
+          const signUrl = `${Laravel.sc2.baseURL}/${data}`;
+          window.consoleLog(['sign url:', signUrl]);
+          window.location = signUrl;
         } else {
           window.consoleLog(['post error', typeof this.content, this.content]);
           const msg = `Title: ${this.title}\nTags: ${this.tags}\nContent Length: ${this.content.length}`;

@@ -38,6 +38,8 @@
         userid: '{{ $userid }}',
         accessToken: '{{ $accessToken }}',
         userInfo: {!! $userInfo !!},
+        txId: '{{ $txId }}',
+        baseUrl: '{{ $baseUrl }}',
       }
     </script>
     <div id="app"></div>

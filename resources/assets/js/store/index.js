@@ -14,6 +14,7 @@ export default new Vuex.Store({
     content: null,
     tags: null,
     title: null,
+    postQueueData: {},
   },
   mutations: {
     logStatus(state, logStatus) {
@@ -31,6 +32,9 @@ export default new Vuex.Store({
     title(state, title) {
       state.title = title;
     },
+    postQueueData(state, postData) {
+      state.postQueueData = postData;
+    },
   },
   getters: {
     logStatus(state) {
@@ -47,6 +51,9 @@ export default new Vuex.Store({
     },
     title(state) {
       return state.title;
+    },
+    postQueueData(state) {
+      return state.postQueueData;
     },
   },
   plugins: [

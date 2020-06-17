@@ -17,6 +17,7 @@ class HomeController extends Controller
         }, $scScope);
 
         $userSession = session('user');
+        $txId = session('txId');
         $userInfo = isset($userSession['user_info'])
                         ? $userSession['user_info'] : null;
         $accessToken = isset($userSession['access_token'])
@@ -32,11 +33,20 @@ class HomeController extends Controller
             'userid' => isset($userSession['user_id']) ? $userSession['user_id'] : null,
             'accessToken' => isset($accessToken) ? $accessToken : null,
             'userInfo' => json_encode($userInfo),
+            'baseUrl' => $_SERVER["HTTP_HOST"],
+            'txId' => $txId,
         ];
         return view('home', $data);
     }
 
     public function callback(Request $request) {
+        $txId = $request->input('tx');
+        if ($txId) {
+            session(['txId' => $txId]);
+            return redirect()->action('HomeController@index');
+        } else {
+            session(['txId' => '']);
+        }
         $data = [
             'access_token' => $request->input('access_token'),
             'expires_in' => $request->input('expires_in'),
