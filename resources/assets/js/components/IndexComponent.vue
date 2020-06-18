@@ -105,26 +105,26 @@ export default {
     MaterialList,
   },
   mounted() {
-    if (window.Laravel.txId) {
+    const txId = this.$route.query.tx;
+    console.log(txId);
+    if (txId) {
       const data = this.$store.getters.postQueueData;
       window.consoleLog(['postQueueData', data]);
-      axios.post('/api/post/queue', data)
-        .then(queueRes => console.info('add into queue success', queueRes))
-        .catch(queueErr => console.error('add into queue failed', queueErr));
-      this.$store.commit('content');
-      this.$store.commit('title');
-      this.$store.commit('tags');
-      this.$store.commit('postQueueData');
-      this.$notify({
-        title: 'Success',
-        message: 'Post successfully',
-        type: 'success',
-      });
-      this.clearPost();
-      setTimeout(() => {
-        window.consoleLog(['clear txid']);
-        axios.get('/callback').then(() => {}).catch(() => {});
-      });
+      if (data && data.length) {
+        axios.post('/api/post/queue', data)
+          .then(queueRes => console.info('add into queue success', queueRes))
+          .catch(queueErr => console.error('add into queue failed', queueErr));
+        this.$store.commit('content');
+        this.$store.commit('title');
+        this.$store.commit('tags');
+        this.$store.commit('postQueueData');
+        this.$notify({
+          title: 'Success',
+          message: `Post successfully, tx: ${txId}`,
+          type: 'success',
+        });
+        this.clearPost();
+      }
     }
     const refs = this.$refs;
     const that = this;
@@ -383,7 +383,7 @@ export default {
           //   duration: 0,
           // });
           const data = encodeOps(operations, {
-            callback: `https://${window.Laravel.baseUrl}?tx={{id}}`,
+            callback: `https://${window.Laravel.baseUrl}/#/?tx={{id}}`,
           }).replace('steem://', '');
           window.consoleLog(['steem uri:', data]);
           this.$store.commit('postQueueData', {
