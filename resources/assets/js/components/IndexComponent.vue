@@ -110,20 +110,18 @@ export default {
     if (txId) {
       const data = this.$store.getters.postQueueData;
       window.consoleLog(['postQueueData', data]);
+      this.$store.commit('postQueueData', {});
+      this.clearPost();
+      console.log(data);
       if (data && data.length) {
         axios.post('/api/post/queue', data)
           .then(queueRes => console.info('add into queue success', queueRes))
           .catch(queueErr => console.error('add into queue failed', queueErr));
-        this.$store.commit('content');
-        this.$store.commit('title');
-        this.$store.commit('tags');
-        this.$store.commit('postQueueData');
         this.$notify({
           title: 'Success',
           message: `Post successfully, tx: ${txId}`,
           type: 'success',
         });
-        this.clearPost();
       }
     }
     const refs = this.$refs;
