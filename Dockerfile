@@ -14,7 +14,8 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 VOLUME /var/www/html/storage/app
 
 USER root
-RUN apk add --no-cache php7-xmlwriter php7-tokenizer php7-pdo
+RUN apk add --no-cache php7-xmlwriter php7-tokenizer php7-pdo \
+    php7-pdo_mysql
 
 USER nobody
 RUN composer install --optimize-autoloader --no-dev --no-interaction --no-progress && \
