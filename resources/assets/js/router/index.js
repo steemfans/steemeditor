@@ -36,7 +36,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.name === 'voteme') {
-    window.open('https://steemconnect.com/sign/account-witness-vote?witness=ety001&approve=1');
+    window.open('https://auth.steem.fans/sign/account-witness-vote?witness=ety001&approve=1');
     window.location = '/';
     next(false);
   }

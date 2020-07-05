@@ -24,12 +24,6 @@
             <el-dropdown-item>
               <a :href="`https://steemit.com/@${username}`" target="_blank">Go to your steemit page</a>
             </el-dropdown-item>
-            <el-dropdown-item>
-              <a :href="`https://cnsteem.com/@${username}`" target="_blank">Go to your cnsteem page</a>
-            </el-dropdown-item>
-            <el-dropdown-item>
-              <a :href="`https://busy.org/@${username}`" target="_blank">Go to your busy.org page</a>
-            </el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
         <el-button :type="(logStatus ? 'danger' : 'primary')"
