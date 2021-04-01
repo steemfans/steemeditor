@@ -6627,6 +6627,10 @@ stdout-stream@^1.4.0:
   dependencies:
     readable-stream "^2.0.1"
 
+steem-uri@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/steem-uri/-/steem-uri-0.1.1.tgz#20da6f713809398b5f77d251def0eeed92cf966b"
+
 steem@^0.7.2:
   version "0.7.11"
   resolved "https://registry.yarnpkg.com/steem/-/steem-0.7.11.tgz#0e8349b4cb677b1438d929537670b028d1ef864e"
@@ -7492,8 +7496,8 @@ xtend@^4.0.0, xtend@~4.0.1:
   resolved "https://registry.yarnpkg.com/xtend/-/xtend-4.0.1.tgz#a5c6d532be656e23db820efb943a1f04998d63af"
 
 y18n@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/y18n/-/y18n-3.2.1.tgz#6d15fba884c08679c0d77e88e7759e811e07fa41"
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/y18n/-/y18n-3.2.2.tgz#85c901bd6470ce71fc4bb723ad209b70f7f28696"
 
 y18n@^4.0.0:
   version "4.0.0"
