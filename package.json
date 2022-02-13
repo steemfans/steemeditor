@@ -21,7 +21,7 @@
     "steem-uri": "^0.1.1"
   },
   "dependencies": {
-    "ajv": "^6.5.4",
+    "ajv": "^6.12.3",
     "axios": "^0.18",
     "babel-core": "^6.26.3",
     "babel-eslint": "^8.2.6",
